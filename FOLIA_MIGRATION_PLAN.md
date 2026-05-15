@@ -30,3 +30,6 @@ Migration can be considered complete when:
   - `clearFormatting` now uses Adventure serializers (`LegacyComponentSerializer` + `PlainTextComponentSerializer`) instead of regex stripping,
   - runtime message/log delivery now deserializes legacy config strings to Adventure `Component` before sending,
   - compatibility for legacy-formatted config content is retained at the boundary.
+- ✅ Connection listener text delivery normalized:
+  - join/broadcast hardcoded legacy lines now deserialize to Adventure `Component` before send,
+  - avoids direct raw legacy string usage in runtime message send flow.
