@@ -20,25 +20,19 @@ This is a BungeeCord & Bukkit/Spigot-Plugin in one and it supports MySQL and Loc
 ## API
 To use the API you need to add AdvancedBan to your project and declare it as a dependency in the plugin.yml.
 
-Add AdvancedBan to you project by adding the AdvancedBan.jar to your build-path or as a:
-#### Maven dependency in your pom.xml
+Add AdvancedBan to your project by adding the AdvancedBan.jar to your build-path or via Gradle.
 
-Example Usage from Jitpack:
-```xml
-<repositories>
-  <repository>
-    <id>jitpack.io</id>
-    <url>https://jitpack.io</url>
-  </repository>
-</repositories>
-...
-<dependency>
-  <groupId>com.github.DevLeoko</groupId>
-  <artifactId>AdvancedBan</artifactId>
-  <version>v2.3.0</version>
-</dependency>
+#### Gradle dependency (Kotlin DSL)
+Example usage from JitPack:
+```kotlin
+repositories {
+    maven("https://jitpack.io")
+}
+
+dependencies {
+    compileOnly("com.github.DevLeoko:AdvancedBan:v2.3.0")
+}
 ```
-Note: Jitpack also supports dependencies for gradle!
 
 [AdvancedBan on Jitpack](https://jitpack.io/#DevLeoko/AdvancedBan)
 
