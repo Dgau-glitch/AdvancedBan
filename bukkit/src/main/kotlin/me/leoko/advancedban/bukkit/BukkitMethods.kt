@@ -29,7 +29,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
-import java.net.URL
+import java.net.URI
 import java.nio.charset.StandardCharsets
 import java.util.Collections
 import java.util.UUID
@@ -71,7 +71,7 @@ class BukkitMethods : MethodInterface {
     }
 
     override fun getFromUrlJson(url: String, key: String): String? = try {
-        val request = URL(url).openConnection() as HttpURLConnection
+        val request = URI.create(url).toURL().openConnection() as HttpURLConnection
         request.connect()
         val jp = JSONParser()
         var json = jp.parse(InputStreamReader(request.inputStream)) as JSONObject
@@ -84,7 +84,7 @@ class BukkitMethods : MethodInterface {
         null
     }
 
-    override fun getVersion(): String = pluginRef.description.version
+    override fun getVersion(): String = pluginRef.pluginMeta.version
     override fun getKeys(file: Any, path: String): Array<String> = (file as YamlConfiguration).getConfigurationSection(path)!!.getKeys(false).toTypedArray()
     override fun getConfig(): YamlConfiguration = config
     override fun getMessages(): YamlConfiguration = messages
