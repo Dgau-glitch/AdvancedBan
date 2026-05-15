@@ -1,6 +1,6 @@
 name: AdvancedBan
 version: ${version}
-main: me.leoko.bukkit.BukkitMain
+main: me.leoko.advancedban.bukkit.BukkitMain
 author: Leoko
 softdepend: [Vault]
 api-version: 1.21
