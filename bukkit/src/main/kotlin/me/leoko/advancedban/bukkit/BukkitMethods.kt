@@ -23,6 +23,7 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
+import net.kyori.adventure.text.Component
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStreamReader
@@ -126,7 +127,7 @@ class BukkitMethods : MethodInterface {
 
     override fun isOnline(name: String): Boolean = Bukkit.getOfflinePlayer(name).isOnline
     override fun getPlayer(name: String): Player? = Bukkit.getPlayer(name)
-    override fun kickPlayer(player: String, reason: String) { getPlayer(player)?.takeIf { it.isOnline }?.kickPlayer(reason) }
+    override fun kickPlayer(player: String, reason: String) { getPlayer(player)?.takeIf { it.isOnline }?.kick(Component.text(reason)) }
     override fun getOnlinePlayers(): Array<Player> = Bukkit.getOnlinePlayers().toTypedArray()
     override fun scheduleAsyncRep(rn: Runnable, l1: Long, l2: Long) {
         Bukkit.getAsyncScheduler().runAtFixedRate(pluginRef, { rn.run() }, l1 * 50, l2 * 50, java.util.concurrent.TimeUnit.MILLISECONDS)

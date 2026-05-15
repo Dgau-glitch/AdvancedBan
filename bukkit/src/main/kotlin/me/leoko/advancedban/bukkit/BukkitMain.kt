@@ -5,6 +5,7 @@ import me.leoko.advancedban.bukkit.listener.ChatListener
 import me.leoko.advancedban.bukkit.listener.CommandListener
 import me.leoko.advancedban.bukkit.listener.ConnectionListener
 import me.leoko.advancedban.bukkit.listener.InternalListener
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -22,7 +23,7 @@ class BukkitMain : JavaPlugin() {
 
         Bukkit.getOnlinePlayers().forEach { player ->
             Universal.get().callConnection(player.name, player.address?.address?.hostAddress ?: "")?.let { reason ->
-                player.kickPlayer(reason)
+                player.kick(Component.text(reason))
             }
         }
     }
