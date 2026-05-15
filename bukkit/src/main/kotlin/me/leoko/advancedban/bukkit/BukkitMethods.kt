@@ -24,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import java.io.File
 import java.io.FileInputStream
@@ -36,6 +37,8 @@ import java.util.UUID
 import java.util.function.BiFunction
 
 class BukkitMethods : MethodInterface {
+    private val legacySerializer: LegacyComponentSerializer = LegacyComponentSerializer.legacySection()
+    private val plainSerializer: PlainTextComponentSerializer = PlainTextComponentSerializer.plainText()
     private val messageFile = File(dataFolder, "Messages.yml")
     private val layoutFile = File(dataFolder, "Layouts.yml")
     private val mysqlFile = File(dataFolder, "MySQL.yml")
@@ -96,7 +99,7 @@ class BukkitMethods : MethodInterface {
     }
 
     override fun isBungee(): Boolean = false
-    override fun clearFormatting(text: String): String = LegacyComponentSerializer.legacySection().serialize(LegacyComponentSerializer.legacySection().deserialize(text)).replace(Regex("§[0-9A-FK-ORa-fk-or]"), "")
+    override fun clearFormatting(text: String): String = plainSerializer.serialize(legacySerializer.deserialize(text))
     override fun getPlugin(): JavaPlugin = pluginRef
     override fun getDataFolder(): File = dataFolderRef
 
