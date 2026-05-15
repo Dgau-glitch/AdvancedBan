@@ -21,8 +21,7 @@ class ConnectionListener : Listener {
             UUIDManager.get().supplyInternUUID(event.name, event.uniqueId)
             val result = Universal.get().callConnection(event.name, event.address.hostAddress)
             if (result != null) {
-                event.kickMessage(Component.text(result))
-                event.loginResult = AsyncPlayerPreLoginEvent.Result.KICK_BANNED
+                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, Component.text(result))
             }
         }
     }

@@ -15,7 +15,6 @@ import me.leoko.advancedban.utils.tabcompletion.TabCompleter
 import org.bstats.bukkit.Metrics
 import org.bstats.charts.SimplePie
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.command.PluginCommand
@@ -25,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStreamReader
@@ -96,7 +96,7 @@ class BukkitMethods : MethodInterface {
     }
 
     override fun isBungee(): Boolean = false
-    override fun clearFormatting(text: String): String? = ChatColor.stripColor(text)
+    override fun clearFormatting(text: String): String = LegacyComponentSerializer.legacySection().serialize(LegacyComponentSerializer.legacySection().deserialize(text)).replace(Regex("§[0-9A-FK-ORa-fk-or]"), "")
     override fun getPlugin(): JavaPlugin = pluginRef
     override fun getDataFolder(): File = dataFolderRef
 
