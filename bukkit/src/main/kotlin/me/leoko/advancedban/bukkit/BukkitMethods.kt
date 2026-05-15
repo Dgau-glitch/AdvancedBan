@@ -5,6 +5,7 @@ import me.leoko.advancedban.Universal
 import me.leoko.advancedban.bukkit.event.PunishmentEvent
 import me.leoko.advancedban.bukkit.event.RevokePunishmentEvent
 import me.leoko.advancedban.bukkit.listener.CommandReceiver
+import me.leoko.advancedban.bukkit.utils.FoliaSchedulers
 import me.leoko.advancedban.manager.DatabaseManager
 import me.leoko.advancedban.manager.PunishmentManager
 import me.leoko.advancedban.manager.UUIDManager
@@ -133,13 +134,13 @@ class BukkitMethods : MethodInterface {
         Bukkit.getAsyncScheduler().runAtFixedRate(pluginRef, { rn.run() }, l1 * 50, l2 * 50, java.util.concurrent.TimeUnit.MILLISECONDS)
     }
     override fun scheduleAsync(rn: Runnable, l1: Long) {
-        Bukkit.getAsyncScheduler().runDelayed(pluginRef, { rn.run() }, l1 * 50, java.util.concurrent.TimeUnit.MILLISECONDS)
+        FoliaSchedulers.runAsyncLater(pluginRef, l1) { rn.run() }
     }
     override fun runAsync(rn: Runnable) {
-        Bukkit.getAsyncScheduler().runNow(pluginRef) { rn.run() }
+        FoliaSchedulers.runAsync(pluginRef) { rn.run() }
     }
     override fun runSync(rn: Runnable) {
-        Bukkit.getGlobalRegionScheduler().run(pluginRef) { rn.run() }
+        FoliaSchedulers.runGlobal(pluginRef) { rn.run() }
     }
     override fun executeCommand(cmd: String) { Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd) }
     override fun getName(player: Any): String = (player as CommandSender).name
