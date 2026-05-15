@@ -85,7 +85,7 @@ class BungeeMethods : MethodInterface {
         val request = URL(url).openConnection() as HttpURLConnection
         request.connect()
         var json = JsonParser.parseReader(InputStreamReader(request.inputStream)).asJsonObject
-        val keys = key.split("|")
+        val keys = key.split("\\|")
         for (i in 0 until keys.size - 1) {
             json = json.getAsJsonObject(keys[i])
         }

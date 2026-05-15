@@ -21,21 +21,7 @@
 
 ---
 
-### 2) Command execution path audit for Folia thread-affinity
-**Files:**
-- `bukkit/src/main/kotlin/me/leoko/advancedban/bukkit/BukkitMethods.kt`
-- `bukkit/src/main/kotlin/me/leoko/advancedban/bukkit/listener/CommandReceiver.kt`
-
-**Current issue:**
-- Permission/tab completion path is correct, but command side-effects should be audited for player/global scheduler boundaries.
-
-**Target:**
-- Any player mutation in command/chat subflows must use `EntityScheduler` (implemented for punishment layout messaging in BukkitMethods).
-- Keep permission check before tab list generation.
-
----
-
-### 3) Remove remaining legacy text/color assumptions
+### 2) Remove remaining legacy text/color assumptions
 **Files:**
 - `bukkit/src/main/kotlin/me/leoko/advancedban/bukkit/BukkitMethods.kt`
 
@@ -47,7 +33,7 @@
 
 ---
 
-### 4) Validation matrix
+### 3) Validation matrix
 After each migration step run:
 1. `gradle :bukkit:build -x test`
 2. smoke-check startup on Folia 1.21.11 test server

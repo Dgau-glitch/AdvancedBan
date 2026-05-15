@@ -9,7 +9,8 @@ import org.bukkit.command.CommandSender
 class CommandReceiver private constructor() : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         if (args.isNotEmpty()) {
-            args[0] = Bukkit.getPlayer(args[0])?.name ?: args[0]
+            val onlineTarget = Bukkit.getPlayer(args[0])
+            args[0] = onlineTarget?.name ?: args[0]
         }
         CommandManager.get().onCommand(sender, command.name, args)
         return true

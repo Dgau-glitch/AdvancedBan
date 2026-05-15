@@ -75,7 +75,7 @@ class BukkitMethods : MethodInterface {
         request.connect()
         val jp = JSONParser()
         var json = jp.parse(InputStreamReader(request.inputStream)) as JSONObject
-        val keys = key.split("|")
+        val keys = key.split("\\|")
         for (i in 0 until keys.size - 1) {
             json = json[keys[i]] as JSONObject
         }
