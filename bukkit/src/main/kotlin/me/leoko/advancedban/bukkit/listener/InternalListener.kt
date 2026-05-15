@@ -1,44 +1,45 @@
 package me.leoko.advancedban.bukkit.listener
 
+import io.papermc.paper.ban.BanListType
 import me.leoko.advancedban.bukkit.event.PunishmentEvent
 import me.leoko.advancedban.bukkit.event.RevokePunishmentEvent
 import me.leoko.advancedban.utils.PunishmentType
-import org.bukkit.BanList
 import org.bukkit.Bukkit
-import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
-import java.util.Date
+import org.bukkit.ban.IpBanList
+import org.bukkit.ban.ProfileBanList
+import java.net.InetAddress
+import java.time.Instant
 
-@Suppress("DEPRECATION")
-class InternalListener : Listener {
-    @Suppress("UNCHECKED_CAST")
-    private fun nameBanList(): BanList<Any> = Bukkit.getBanList(BanList.Type.NAME) as BanList<Any>
+class InternalListener : org.bukkit.event.Listener {
+    private fun profileBanList(): ProfileBanList = Bukkit.getBanList(BanListType.PROFILE)
 
-    @Suppress("UNCHECKED_CAST")
-    private fun ipBanList(): BanList<Any> = Bukkit.getBanList(BanList.Type.IP) as BanList<Any>
+    private fun ipBanList(): IpBanList = Bukkit.getBanList(BanListType.IP)
 
-    @EventHandler
+    @org.bukkit.event.EventHandler
     fun onPunish(event: PunishmentEvent) {
         val punishment = event.punishment
         when (punishment.type) {
             PunishmentType.BAN, PunishmentType.TEMP_BAN -> {
-                nameBanList().addBan(punishment.name, punishment.reason, Date(punishment.end), punishment.operator)
+                val profile = Bukkit.createProfile(punishment.name)
+                profileBanList().addBan(profile, punishment.reason, Instant.ofEpochMilli(punishment.end), punishment.operator)
             }
 
             PunishmentType.IP_BAN, PunishmentType.TEMP_IP_BAN -> {
-                ipBanList().addBan(punishment.name, punishment.reason, Date(punishment.end), punishment.operator)
+                InetAddress.getByName(punishment.name)?.let {
+                    ipBanList().addBan(it, punishment.reason, Instant.ofEpochMilli(punishment.end), punishment.operator)
+                }
             }
 
             else -> Unit
         }
     }
 
-    @EventHandler
+    @org.bukkit.event.EventHandler
     fun onRevokePunishment(event: RevokePunishmentEvent) {
         val punishment = event.punishment
         when (punishment.type) {
-            PunishmentType.BAN, PunishmentType.TEMP_BAN -> nameBanList().pardon(punishment.name)
-            PunishmentType.IP_BAN, PunishmentType.TEMP_IP_BAN -> ipBanList().pardon(punishment.name)
+            PunishmentType.BAN, PunishmentType.TEMP_BAN -> profileBanList().pardon(Bukkit.createProfile(punishment.name))
+            PunishmentType.IP_BAN, PunishmentType.TEMP_IP_BAN -> InetAddress.getByName(punishment.name)?.let { ipBanList().pardon(it) }
             else -> Unit
         }
     }
