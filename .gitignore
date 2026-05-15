@@ -91,3 +91,7 @@ local.properties
 *.ear
 /lib
 **/*~
+
+.gradle/
+build/
+**/build/
