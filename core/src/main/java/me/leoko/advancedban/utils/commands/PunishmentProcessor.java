@@ -61,15 +61,9 @@ public class PunishmentProcessor implements Consumer<Command.CommandInput> {
         else if (reason.isEmpty())
             reason = null;
 
-        // check if punishment of this type is already active
-        if (alreadyPunished(target, type)) {
-            MessageManager.sendMessage(input.getSender(), type.getBasic().getName() + ".AlreadyDone",
-                    true, "NAME", name);
-            return;
-        }
-
         MethodInterface mi = Universal.get().getMethods();
         String operator = mi.getName(input.getSender());
+        replaceExistingPunishment(target, type, operator);
         Punishment.create(name, target, reason, operator, type, end, timeTemplate, silent);
 
         MessageManager.sendMessage(input.getSender(), type.getBasic().getName() + ".Done",
@@ -171,6 +165,16 @@ public class PunishmentProcessor implements Consumer<Command.CommandInput> {
     private static boolean alreadyPunished(String target, PunishmentType type) {
         return (type.getBasic() == PunishmentType.MUTE && PunishmentManager.get().isMuted(target))
                 || (type.getBasic() == PunishmentType.BAN && PunishmentManager.get().isBanned(target));
+    }
+
+    private static void replaceExistingPunishment(String target, PunishmentType type, String operator) {
+        if (!alreadyPunished(target, type)) {
+            return;
+        }
+        Punishment activePunishment = getPunishment(target, type);
+        if (activePunishment != null) {
+            activePunishment.delete(operator, false, true);
+        }
     }
 
     private static class TimeCalculation {
