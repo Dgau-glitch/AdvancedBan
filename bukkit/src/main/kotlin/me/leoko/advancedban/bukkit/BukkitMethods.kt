@@ -119,7 +119,9 @@ class BukkitMethods : MethodInterface {
         }
     }
 
-    override fun sendMessage(player: Any, msg: String) { (player as CommandSender).sendMessage(msg) }
+    override fun sendMessage(player: Any, msg: String) {
+        (player as CommandSender).sendMessage(legacySerializer.deserialize(msg))
+    }
     override fun hasPerms(player: Any, perms: String): Boolean = (player as CommandSender).hasPermission(perms)
 
     override fun getOfflinePermissionPlayer(name: String): Permissionable {
@@ -209,7 +211,7 @@ class BukkitMethods : MethodInterface {
         }
     }
 
-    override fun log(msg: String) { Bukkit.getConsoleSender().sendMessage(msg.replace("&", "§")) }
+    override fun log(msg: String) { Bukkit.getConsoleSender().sendMessage(legacySerializer.deserialize(msg.replace("&", "§"))) }
     override fun isUnitTesting(): Boolean = false
 
     private val pluginRef: JavaPlugin get() = BukkitMain.get()
