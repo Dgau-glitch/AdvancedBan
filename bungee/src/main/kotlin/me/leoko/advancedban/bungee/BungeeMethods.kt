@@ -134,7 +134,12 @@ class BungeeMethods : MethodInterface {
 
     override fun kickPlayer(player: String, reason: String) {
         when {
-            BungeeMain.getCloudSupport() != null -> BungeeMain.getCloudSupport()!!.kick(getPlayer(player)!!.uniqueId, reason)
+            BungeeMain.getCloudSupport() != null -> {
+                val target = getPlayer(player)
+                if (target != null) {
+                    BungeeMain.getCloudSupport()!!.kick(target.uniqueId, reason)
+                }
+            }
             Universal.isRedis() -> RedisBungee.getApi().sendChannelMessage("advancedban:main", "kick $player $reason")
             else -> getPlayer(player)?.disconnect(*TextComponent.fromLegacyText(reason))
         }
