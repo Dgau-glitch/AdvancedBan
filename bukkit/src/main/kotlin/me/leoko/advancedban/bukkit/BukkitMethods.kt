@@ -128,10 +128,18 @@ class BukkitMethods : MethodInterface {
     override fun getPlayer(name: String): Player? = Bukkit.getPlayer(name)
     override fun kickPlayer(player: String, reason: String) { getPlayer(player)?.takeIf { it.isOnline }?.kickPlayer(reason) }
     override fun getOnlinePlayers(): Array<Player> = Bukkit.getOnlinePlayers().toTypedArray()
-    override fun scheduleAsyncRep(rn: Runnable, l1: Long, l2: Long) { Bukkit.getScheduler().runTaskTimerAsynchronously(pluginRef, rn, l1, l2) }
-    override fun scheduleAsync(rn: Runnable, l1: Long) { Bukkit.getScheduler().runTaskLaterAsynchronously(pluginRef, rn, l1) }
-    override fun runAsync(rn: Runnable) { Bukkit.getScheduler().runTaskAsynchronously(pluginRef, rn) }
-    override fun runSync(rn: Runnable) { Bukkit.getScheduler().runTask(pluginRef, rn) }
+    override fun scheduleAsyncRep(rn: Runnable, l1: Long, l2: Long) {
+        Bukkit.getAsyncScheduler().runAtFixedRate(pluginRef, { rn.run() }, l1 * 50, l2 * 50, java.util.concurrent.TimeUnit.MILLISECONDS)
+    }
+    override fun scheduleAsync(rn: Runnable, l1: Long) {
+        Bukkit.getAsyncScheduler().runDelayed(pluginRef, { rn.run() }, l1 * 50, java.util.concurrent.TimeUnit.MILLISECONDS)
+    }
+    override fun runAsync(rn: Runnable) {
+        Bukkit.getAsyncScheduler().runNow(pluginRef) { rn.run() }
+    }
+    override fun runSync(rn: Runnable) {
+        Bukkit.getGlobalRegionScheduler().run(pluginRef) { rn.run() }
+    }
     override fun executeCommand(cmd: String) { Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd) }
     override fun getName(player: Any): String = (player as CommandSender).name
     override fun getName(uuid: String): String? = Bukkit.getOfflinePlayer(UUID.fromString(uuid)).name

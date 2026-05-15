@@ -1,7 +1,6 @@
 package me.leoko.advancedban.bukkit.listener
 
 import me.leoko.advancedban.Universal
-import me.leoko.advancedban.bukkit.BukkitMain
 import me.leoko.advancedban.manager.PunishmentManager
 import me.leoko.advancedban.manager.UUIDManager
 import org.bukkit.Bukkit
@@ -33,15 +32,17 @@ class ConnectionListener : Listener {
     fun onJoin(event: PlayerJoinEvent) {
         Universal.get().methods.scheduleAsync({
             if (event.player.name.equals("Leoko", ignoreCase = true)) {
-                Bukkit.getScheduler().runTaskLaterAsynchronously(BukkitMain.get(), Runnable {
+                Universal.get().methods.scheduleAsync({
                     if (Universal.get().broadcastLeoko()) {
-                        Bukkit.broadcastMessage("")
-                        Bukkit.broadcastMessage("§c§lAdvancedBan §8§l» §7My creator §c§oLeoko §7just joined the game ^^")
-                        Bukkit.broadcastMessage("")
+                        Universal.get().methods.runSync {
+                            Bukkit.broadcastMessage("")
+                            Bukkit.broadcastMessage("§c§lAdvancedBan §8§l» §7My creator §c§oLeoko §7just joined the game ^^")
+                            Bukkit.broadcastMessage("")
+                        }
                     } else {
-                        event.player.sendMessage("§c§lAdvancedBan v2 §8§l» §cHey Leoko we are using your Plugin (NO-BC)")
+                        Universal.get().methods.runSync { event.player.sendMessage("§c§lAdvancedBan v2 §8§l» §cHey Leoko we are using your Plugin (NO-BC)") }
                     }
-                }, 20L)
+                }, 20)
             }
         }, 20)
     }

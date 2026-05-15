@@ -6,7 +6,6 @@ import me.leoko.advancedban.bukkit.listener.CommandListener
 import me.leoko.advancedban.bukkit.listener.ConnectionListener
 import me.leoko.advancedban.bukkit.listener.InternalListener
 import org.bukkit.Bukkit
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.plugin.java.JavaPlugin
 
 class BukkitMain : JavaPlugin() {
@@ -22,14 +21,8 @@ class BukkitMain : JavaPlugin() {
         server.pluginManager.registerEvents(InternalListener(), this)
 
         Bukkit.getOnlinePlayers().forEach { player ->
-            val preLoginEvent = AsyncPlayerPreLoginEvent(
-                player.name,
-                player.address.address,
-                player.uniqueId
-            )
-            connectionListener.onConnect(preLoginEvent)
-            if (preLoginEvent.loginResult == AsyncPlayerPreLoginEvent.Result.KICK_BANNED) {
-                player.kickPlayer(preLoginEvent.kickMessage)
+            Universal.get().callConnection(player.name, player.address?.address?.hostAddress ?: "")?.let { reason ->
+                player.kickPlayer(reason)
             }
         }
     }
