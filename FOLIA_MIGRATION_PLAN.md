@@ -14,6 +14,11 @@ After each migration step run:
 2. smoke-check startup on Folia 1.21.11 test server
 3. verify: punish/unpunish, mute/chat-block, command tab-completion permissions
 
+### Validation status (2026-05-15)
+- ✅ `gradle :bukkit:build -x test` passes after migration changes.
+- ⚠️ Folia 1.21.11 runtime smoke-check not executed in this environment (server runtime unavailable here).
+- ⚠️ Manual gameplay checks (punish/unpunish, mute/chat-block, tab-completion permissions) not executed in this environment.
+
 ## Done criterion
 Migration can be considered complete when:
 - no Bukkit-side deprecated API warnings remain in migrated paths,
