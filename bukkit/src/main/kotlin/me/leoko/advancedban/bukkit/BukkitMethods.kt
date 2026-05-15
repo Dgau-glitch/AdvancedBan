@@ -151,10 +151,21 @@ class BukkitMethods : MethodInterface {
     override fun getInternUUID(player: Any): String = if (player is OfflinePlayer) player.uniqueId.toString().replace("-", "") else "none"
     override fun getInternUUID(player: String): String = Bukkit.getOfflinePlayer(player).uniqueId.toString().replace("-", "")
 
+
+    private fun sendPunishmentLayout(target: Any, punishment: Punishment) {
+        if (target is Player) {
+            FoliaSchedulers.runPlayer(target, pluginRef) {
+                punishment.layout.forEach { sendMessage(target, it) }
+            }
+            return
+        }
+        punishment.layout.forEach { sendMessage(target, it) }
+    }
+
     override fun callChat(player: Any): Boolean {
         val pnt = PunishmentManager.get().getMute(UUIDManager.get().getUUID(getName(player)))
         if (pnt != null) {
-            pnt.layout.forEach { sendMessage(player, it) }
+            sendPunishmentLayout(player, pnt)
             return true
         }
         return false
@@ -163,7 +174,7 @@ class BukkitMethods : MethodInterface {
     override fun callCMD(player: Any, cmd: String): Boolean {
         val pnt = PunishmentManager.get().getMute(UUIDManager.get().getUUID(getName(player)))
         if (Universal.get().isMuteCommand(cmd.substring(1)) && pnt != null) {
-            pnt.layout.forEach { sendMessage(player, it) }
+            sendPunishmentLayout(player, pnt)
             return true
         }
         return false

@@ -30,7 +30,7 @@
 - Permission/tab completion path is correct, but command side-effects should be audited for player/global scheduler boundaries.
 
 **Target:**
-- Any player mutation in command subflows must use `EntityScheduler`.
+- Any player mutation in command/chat subflows must use `EntityScheduler` (implemented for punishment layout messaging in BukkitMethods).
 - Keep permission check before tab list generation.
 
 ---
