@@ -15,7 +15,7 @@ import java.util.Date;
  * @author Beelzebu
  */
 public class InternalListener implements Listener {
-    
+
     @EventHandler
     public void onPunish(PunishmentEvent e) {
         BanList banlist;
@@ -27,7 +27,7 @@ public class InternalListener implements Listener {
             banlist.addBan(e.getPunishment().getName(), e.getPunishment().getReason(), new Date(e.getPunishment().getEnd()), e.getPunishment().getOperator());
         }
     }
-    
+
     @EventHandler
     public void onRevokePunishment(RevokePunishmentEvent e) {
         BanList banlist;
