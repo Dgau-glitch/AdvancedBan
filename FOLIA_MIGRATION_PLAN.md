@@ -21,22 +21,7 @@
 
 ---
 
-### 2) Connection/login flow hardening
-**Files:**
-- `bukkit/src/main/kotlin/me/leoko/advancedban/bukkit/listener/ConnectionListener.kt`
-- `bukkit/src/main/kotlin/me/leoko/advancedban/bukkit/BukkitMain.kt`
-
-**Current issue:**
-- Pre-login denial is modernized, but flow should be revalidated against latest Paper/Folia event contract and cancellation semantics.
-
-**Target:**
-- Keep `AsyncPlayerPreLoginEvent` handling only for login gate.
-- Keep join-path actions on entity/global schedulers only.
-- Ensure zero off-thread player mutations.
-
----
-
-### 3) Command execution path audit for Folia thread-affinity
+### 2) Command execution path audit for Folia thread-affinity
 **Files:**
 - `bukkit/src/main/kotlin/me/leoko/advancedban/bukkit/BukkitMethods.kt`
 - `bukkit/src/main/kotlin/me/leoko/advancedban/bukkit/listener/CommandReceiver.kt`
@@ -50,7 +35,7 @@
 
 ---
 
-### 4) Remove remaining legacy text/color assumptions
+### 3) Remove remaining legacy text/color assumptions
 **Files:**
 - `bukkit/src/main/kotlin/me/leoko/advancedban/bukkit/BukkitMethods.kt`
 
@@ -62,7 +47,7 @@
 
 ---
 
-### 5) Validation matrix
+### 4) Validation matrix
 After each migration step run:
 1. `gradle :bukkit:build -x test`
 2. smoke-check startup on Folia 1.21.11 test server

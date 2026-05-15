@@ -142,7 +142,9 @@ class BukkitMethods : MethodInterface {
     override fun runSync(rn: Runnable) {
         FoliaSchedulers.runGlobal(pluginRef) { rn.run() }
     }
-    override fun executeCommand(cmd: String) { Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd) }
+    override fun executeCommand(cmd: String) {
+        FoliaSchedulers.runGlobal(pluginRef) { Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd) }
+    }
     override fun getName(player: Any): String = (player as CommandSender).name
     override fun getName(uuid: String): String? = Bukkit.getOfflinePlayer(UUID.fromString(uuid)).name
     override fun getIP(player: Any): String = (player as Player).address.hostName
