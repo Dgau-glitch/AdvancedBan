@@ -186,7 +186,11 @@ class BukkitMethods : MethodInterface {
     override fun isOnlineMode(): Boolean = Bukkit.getOnlineMode()
 
     override fun notify(perm: String, notification: List<String>) {
-        Bukkit.getOnlinePlayers().filter { hasPerms(it, perm) }.forEach { p -> notification.forEach { sendMessage(p, it) } }
+        Bukkit.getOnlinePlayers().filter { hasPerms(it, perm) }.forEach { player ->
+            FoliaSchedulers.runPlayer(player, pluginRef) {
+                notification.forEach { sendMessage(player, it) }
+            }
+        }
     }
 
     override fun log(msg: String) { Bukkit.getConsoleSender().sendMessage(msg.replace("&", "§")) }
