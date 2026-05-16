@@ -11,4 +11,8 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
-tasks.test { useJUnitPlatform() }
+tasks.test {
+    useJUnitPlatform()
+    // Stabilize test execution in constrained/isolated environments.
+    maxParallelForks = 1
+}
