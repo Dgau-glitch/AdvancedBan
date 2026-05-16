@@ -22,6 +22,7 @@ tasks.processResources {
 
 tasks.withType<ShadowJar>().configureEach {
     archiveClassifier.set("")
+    relocate("org.bstats", "me.leoko.advancedban.libs.bstats")
 }
 
 tasks.build {
