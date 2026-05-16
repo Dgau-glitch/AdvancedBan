@@ -49,12 +49,12 @@ class PunishmentProcessor(private val type: PunishmentType) : Consumer<Command.C
         val mi: MethodInterface = Universal.get().methods
         if (time.matches("#.+".toRegex())) {
             val layout = time.substring(1)
-            if (!mi.contains(mi.layouts, "Time.$layout")) {
+            if (!mi.contains(mi.getLayouts(), "Time.$layout")) {
                 MessageManager.sendMessage(input.sender, "General.LayoutNotFound", true, "NAME", layout)
                 return null
             }
             val i = PunishmentManager.get().getCalculationLevel(uuid, layout)
-            val timeLayout = mi.getStringList(mi.layouts, "Time.$layout")
+            val timeLayout = mi.getStringList(mi.getLayouts(), "Time.$layout")
             val timeName = timeLayout[minOf(i, timeLayout.size - 1)]
             if (timeName.equals("perma", ignoreCase = true)) return TimeCalculation(layout, -1L)
             return TimeCalculation(layout, TimeManager.getTime() + TimeManager.toMilliSec(timeName))
@@ -65,9 +65,9 @@ class PunishmentProcessor(private val type: PunishmentType) : Consumer<Command.C
             var max = -1L
             for (i in 10 downTo 1) {
                 if (Universal.get().hasPerms(input.sender, "ab.${type.getName()}.dur.$i")
-                    && mi.contains(mi.config, "TempPerms.$i")
+                    && mi.contains(mi.getConfig(), "TempPerms.$i")
                 ) {
-                    max = mi.getLong(mi.config, "TempPerms.$i") * 1000
+                    max = mi.getLong(mi.getConfig(), "TempPerms.$i")!! * 1000
                     break
                 }
             }
@@ -84,7 +84,7 @@ class PunishmentProcessor(private val type: PunishmentType) : Consumer<Command.C
         val dataName = name.lowercase()
         val exempt = if (mi.isOnline(dataName)) {
             val onlineTarget = mi.getPlayer(dataName)
-            canNotPunish({ perms -> mi.hasPerms(sender, perms) }, { perms -> mi.hasPerms(onlineTarget, perms) }, type.getName())
+            canNotPunish({ perms -> mi.hasPerms(sender, perms) }, { perms -> mi.hasPerms(onlineTarget!!, perms) }, type.getName())
         } else {
             val offlinePermissionPlayer: Permissionable = mi.getOfflinePermissionPlayer(name)
             Universal.get().isExemptPlayer(dataName) ||

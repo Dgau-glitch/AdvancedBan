@@ -6,7 +6,7 @@ import java.util.Date
 object TimeManager {
     @JvmStatic
     fun getTime(): Long {
-        return Date().time + Universal.get().methods.getInteger(Universal.get().methods.config, "TimeDiff", 0) * 60L * 60L * 1000L
+        return Date().time + Universal.get().methods.getInteger(Universal.get().methods.getConfig(), "TimeDiff", 0) * 60L * 60L * 1000L
     }
 
     @JvmStatic

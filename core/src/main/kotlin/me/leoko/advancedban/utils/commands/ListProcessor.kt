@@ -50,16 +50,16 @@ class ListProcessor(
         }
 
         val prefix = MessageManager.getMessage("General.Prefix")
-        val header = MessageManager.getLayout(mi.messages, "$config.Header", "PREFIX", prefix, "NAME", name)
+        val header = MessageManager.getLayout(mi.getMessages(), "$config.Header", "PREFIX", prefix, "NAME", name)
         header.forEach { line -> mi.sendMessage(input.sender, line) }
 
-        val format = SimpleDateFormat(mi.getString(mi.config, "DateFormat", "dd.MM.yyyy-HH:mm"))
+        val format = SimpleDateFormat(mi.getString(mi.getConfig(), "DateFormat", "dd.MM.yyyy-HH:mm"))
         for (i in (page - 1) * 5 until page * 5) {
             if (punishments.size <= i) break
             val punishment = punishments[i]
             val nameOrIp = if (punishment.type.isIpOrientated()) "${punishment.name} / ${punishment.uuid}" else punishment.name
             val entryLayout = MessageManager.getLayout(
-                mi.messages, "$config.Entry",
+                mi.getMessages(), "$config.Entry",
                 "PREFIX", prefix,
                 "NAME", nameOrIp,
                 "DURATION", punishment.getDuration(history),

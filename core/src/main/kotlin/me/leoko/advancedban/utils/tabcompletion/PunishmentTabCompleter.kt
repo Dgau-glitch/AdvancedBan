@@ -17,7 +17,7 @@ class PunishmentTabCompleter(private val temporary: Boolean) : TabCompleter {
 
         if (actualArgs.size == 1) {
             if (!hiddenTag) suggestions.add("-s")
-            for (player in methodInterface.onlinePlayers) {
+            for (player in methodInterface.getOnlinePlayers()) {
                 suggestions.add(methodInterface.getName(player))
             }
             suggestions.add("[Name]")
@@ -31,12 +31,12 @@ class PunishmentTabCompleter(private val temporary: Boolean) : TabCompleter {
                     suggestions.add(amount + unit)
                 }
             }
-            for (layout in methodInterface.getKeys(methodInterface.layouts, "Time")) {
+            for (layout in methodInterface.getKeys(methodInterface.getLayouts(), "Time")) {
                 suggestions.add("#$layout")
             }
         } else if ((temporary && actualArgs.size == 3) || actualArgs.size == 2) {
             suggestions.add("Reason...")
-            for (layout in methodInterface.getKeys(methodInterface.layouts, "Message")) {
+            for (layout in methodInterface.getKeys(methodInterface.getLayouts(), "Message")) {
                 suggestions.add("@$layout")
             }
         }

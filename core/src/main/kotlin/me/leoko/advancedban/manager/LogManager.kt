@@ -17,13 +17,13 @@ class LogManager {
 
     init {
         val universal = Universal.get()
-        logsFolder = File(universal.methods.dataFolder, "logs")
+        logsFolder = File(universal.methods.getDataFolder(), "logs")
         if (!logsFolder.exists()) logsFolder.mkdirs()
         checkLastLog(true)
         val files = logsFolder.listFiles() ?: emptyArray()
         for (file in files) {
             if (file.isFile && file.name.contains(".gz") &&
-                (System.currentTimeMillis() - file.lastModified()) >= universal.methods.getInteger(universal.methods.config, "Log Purge Days") * 86400000L
+                (System.currentTimeMillis() - file.lastModified()) >= universal.methods.getInteger(universal.methods.getConfig(), "Log Purge Days")!!.toLong() * 86400000L
             ) {
                 file.delete()
             }

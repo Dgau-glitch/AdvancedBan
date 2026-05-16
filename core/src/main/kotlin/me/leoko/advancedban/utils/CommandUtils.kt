@@ -41,7 +41,7 @@ object CommandUtils {
     fun processReason(input: Command.CommandInput): String? {
         val mi = Universal.get().methods
         val reason = input.args.joinToString(" ")
-        if (reason.matches(Regex("[~@].+")) && !mi.contains(mi.layouts, "Message." + input.primary.substring(1))) {
+        if (reason.matches(Regex("[~@].+")) && !mi.contains(mi.getLayouts(), "Message." + input.primary.substring(1))) {
             MessageManager.sendMessage(input.sender, "General.LayoutNotFound", true, "NAME", input.primary.substring(1))
             return null
         }

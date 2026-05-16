@@ -39,10 +39,10 @@ import java.util.function.BiFunction
 class BukkitMethods : MethodInterface {
     private val legacySerializer: LegacyComponentSerializer = LegacyComponentSerializer.legacySection()
     private val plainSerializer: PlainTextComponentSerializer = PlainTextComponentSerializer.plainText()
-    private val messageFile = File(dataFolder, "Messages.yml")
-    private val layoutFile = File(dataFolder, "Layouts.yml")
-    private val mysqlFile = File(dataFolder, "MySQL.yml")
-    private var configFile = File(dataFolder, "config.yml")
+    private val messageFile = File(dataFolderRef, "Messages.yml")
+    private val layoutFile = File(dataFolderRef, "Layouts.yml")
+    private val mysqlFile = File(dataFolderRef, "MySQL.yml")
+    private var configFile = File(dataFolderRef, "config.yml")
 
     private lateinit var config: YamlConfiguration
     private lateinit var messages: YamlConfiguration
