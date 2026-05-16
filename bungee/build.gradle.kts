@@ -9,6 +9,5 @@ dependencies {
     compileOnly("de.dytanic.cloudnet:cloudnet-core:2.1.17")
     compileOnly("net.luckperms:api:5.2")
     compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.6-SNAPSHOT")
-    implementation("org.bstats:bstats-bungeecord:1.5")
-    implementation(project(":core"))
+        implementation(project(":core"))
 }

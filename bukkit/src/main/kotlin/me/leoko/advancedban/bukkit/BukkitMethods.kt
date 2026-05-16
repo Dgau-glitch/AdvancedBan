@@ -12,8 +12,6 @@ import me.leoko.advancedban.manager.UUIDManager
 import me.leoko.advancedban.utils.Permissionable
 import me.leoko.advancedban.utils.Punishment
 import me.leoko.advancedban.utils.tabcompletion.TabCompleter
-import org.bstats.bukkit.Metrics
-import org.bstats.charts.SimplePie
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
@@ -94,8 +92,7 @@ class BukkitMethods : MethodInterface {
     override fun getLayouts(): YamlConfiguration = layouts
 
     override fun setupMetrics() {
-        val metrics = Metrics(pluginRef, 4732)
-        metrics.addCustomChart(SimplePie("MySQL") { if (DatabaseManager.get().isUseMySQL) "yes" else "no" })
+        // bStats removed intentionally
     }
 
     override fun isBungee(): Boolean = false
