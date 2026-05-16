@@ -25,7 +25,7 @@ class DatabaseManager {
             dataSource = DynamicDataSource(isUseMySQL).generateDataSource()
         } catch (ex: ClassNotFoundException) {
             Universal.get().log("§cERROR: Failed to configure data source!")
-            Universal.get().debug(ex.message)
+            Universal.get().debug(ex.message ?: "unknown error")
             return
         }
 

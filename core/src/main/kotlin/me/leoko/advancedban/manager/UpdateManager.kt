@@ -1,45 +1,29 @@
-package me.leoko.advancedban.manager;
+package me.leoko.advancedban.manager
 
-import me.leoko.advancedban.MethodInterface;
-import me.leoko.advancedban.Universal;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.List;
-
+import me.leoko.advancedban.MethodInterface
+import me.leoko.advancedban.Universal
+import org.apache.commons.io.FileUtils
+import java.io.File
+import java.io.IOException
+import java.nio.charset.Charset
 
 /**
  * The Update Manager used to keep config files up to date and migrate them seamlessly to the newest version.
  */
-public class UpdateManager {
+class UpdateManager {
 
-    private static UpdateManager instance = null;
+    fun setup() {
+        val mi: MethodInterface = Universal.get().methods
 
-    /**
-     * Get the update manager.
-     *
-     * @return the update manager instance
-     */
-    public static synchronized UpdateManager get() {
-        return instance == null ? instance = new UpdateManager() : instance;
-    }
-
-    /**
-     * Initially checks which configuration options from the newest version are missing and tries to add them
-     * without altering any old configuration settings.
-     */
-    public void setup() {
-        MethodInterface mi = Universal.get().getMethods();
-
-        if (mi.isUnitTesting()) return;
+        if (mi.isUnitTesting()) return
 
         if (!mi.contains(mi.getMessages(), "UnNote.Usage")) {
             try {
-                addMessage("Check:", "  Note: \"&cNotes &8» &7%COUNT%\"", 1);
-                FileUtils.writeLines(new File(mi.getDataFolder(), "Messages.yml"), "UTF8", Arrays.asList(
+                addMessage("Check:", "  Note: \"&cNotes &8» &7%COUNT%\"", 1)
+                FileUtils.writeLines(
+                    File(mi.getDataFolder(), "Messages.yml"),
+                    "UTF8",
+                    listOf(
                         "",
                         "# Automatically added by v2.2.1 update process",
                         "UnNote:",
@@ -87,63 +71,67 @@ public class UpdateManager {
                         "    - \"&7\"",
                         "  Footer: \"&7Page &e&o%CURRENT_PAGE% &7of &e&o%TOTAL_PAGES% &8| &7Notes: &e&o%COUNT%\"",
                         "  PageFooter: \"&7Use &e&o/notes %NEXT_PAGE% &7to see the next page\""
-                ), true);
-            } catch (IOException e) {
-                e.printStackTrace();
+                    ),
+                    true
+                )
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
 
         if (!mi.contains(mi.getMessages(), "WarnsOwn")) {
-            addMessage("ChangeReason:", "", 0);
-            addMessage("ChangeReason:", "WarnsOwn:", -1);
-            addMessage("ChangeReason:", "  OutOfIndex: \"&cThere is no page %PAGE%!\"", -1);
-            addMessage("ChangeReason:", "  NoEntries: \"&c&oYou have no warnings yet\"", -1);
-            addMessage("ChangeReason:", "  Header:", -1);
-            addMessage("ChangeReason:", "    - \"%PREFIX% &7Your warnings:\"", -1);
-            addMessage("ChangeReason:", "    - \"&e&oDuration &8| &7&oWarned by\"", -1);
-            addMessage("ChangeReason:", "    - \"&c&o#ID &8> &7&oReason\"", -1);
-            addMessage("ChangeReason:", "    - \"&7\"", -1);
-            addMessage("ChangeReason:", "  Entry:", -1);
-            addMessage("ChangeReason:", "    - \"&8[&e%DATE%&8]\"", -1);
-            addMessage("ChangeReason:", "    - \"&e%DURATION% &8| &7%OPERATOR%\"", -1);
-            addMessage("ChangeReason:", "    - \"&c&l#%ID% &8> &7&o%REASON%\"", -1);
-            addMessage("ChangeReason:", "    - \"&7\"", -1);
-            addMessage("ChangeReason:", "  Footer: \"&7Page &e&o%CURRENT_PAGE% &7of &e&o%TOTAL_PAGES% &8| &7Active warnings: &e&o%COUNT%\"", -1);
-            addMessage("ChangeReason:", "  PageFooter: \"&7Use &e&o/warns %NEXT_PAGE% &7to see the next page\"", -1);
+            addMessage("ChangeReason:", "", 0)
+            addMessage("ChangeReason:", "WarnsOwn:", -1)
+            addMessage("ChangeReason:", "  OutOfIndex: \"&cThere is no page %PAGE%!\"", -1)
+            addMessage("ChangeReason:", "  NoEntries: \"&c&oYou have no warnings yet\"", -1)
+            addMessage("ChangeReason:", "  Header:", -1)
+            addMessage("ChangeReason:", "    - \"%PREFIX% &7Your warnings:\"", -1)
+            addMessage("ChangeReason:", "    - \"&e&oDuration &8| &7&oWarned by\"", -1)
+            addMessage("ChangeReason:", "    - \"&c&o#ID &8> &7&oReason\"", -1)
+            addMessage("ChangeReason:", "    - \"&7\"", -1)
+            addMessage("ChangeReason:", "  Entry:", -1)
+            addMessage("ChangeReason:", "    - \"&8[&e%DATE%&8]\"", -1)
+            addMessage("ChangeReason:", "    - \"&e%DURATION% &8| &7%OPERATOR%\"", -1)
+            addMessage("ChangeReason:", "    - \"&c&l#%ID% &8> &7&o%REASON%\"", -1)
+            addMessage("ChangeReason:", "    - \"&7\"", -1)
+            addMessage("ChangeReason:", "  Footer: \"&7Page &e&o%CURRENT_PAGE% &7of &e&o%TOTAL_PAGES% &8| &7Active warnings: &e&o%COUNT%\"", -1)
+            addMessage("ChangeReason:", "  PageFooter: \"&7Use &e&o/warns %NEXT_PAGE% &7to see the next page\"", -1)
         }
 
         if (!mi.contains(mi.getMessages(), "UnBan.Notification")) {
-            addMessage("UnBan:", "  Notification: \"&e&o%OPERATOR% &7unbanned &c&o%NAME%\"", 1);
-            addMessage("UnMute:", "  Notification: \"&e&o%OPERATOR% &7unmuted &c&o%NAME%\"", 1);
-            addMessage("UnWarn:", "  Notification: \"&e&o%OPERATOR% &7unwarned &c&o%NAME%\"", 1);
+            addMessage("UnBan:", "  Notification: \"&e&o%OPERATOR% &7unbanned &c&o%NAME%\"", 1)
+            addMessage("UnMute:", "  Notification: \"&e&o%OPERATOR% &7unmuted &c&o%NAME%\"", 1)
+            addMessage("UnWarn:", "  Notification: \"&e&o%OPERATOR% &7unwarned &c&o%NAME%\"", 1)
         }
 
         if (!mi.contains(mi.getMessages(), "Check.MuteReason")) {
             try {
-                File file = new File(mi.getDataFolder(), "Messages.yml");
-                List<String> lines = FileUtils.readLines(file, Charset.defaultCharset());
-                int index = lines.indexOf("Check:");
-                lines.add(index + 1, "  MuteReason: \"  &cReason &8\\xbb &7%REASON%\"");
-                FileUtils.writeLines(file, lines);
-            } catch (IOException ex) {
-                ex.printStackTrace();
+                val file = File(mi.getDataFolder(), "Messages.yml")
+                val lines = FileUtils.readLines(file, Charset.defaultCharset())
+                val index = lines.indexOf("Check:")
+                lines.add(index + 1, "  MuteReason: \"  &cReason &8\\xbb &7%REASON%\"")
+                FileUtils.writeLines(file, lines)
+            } catch (ex: IOException) {
+                ex.printStackTrace()
             }
         }
 
         if (!mi.contains(mi.getMessages(), "Check.BanReason")) {
             try {
-                File file = new File(mi.getDataFolder(), "Messages.yml");
-                List<String> lines = FileUtils.readLines(file, Charset.defaultCharset());
-                int index = lines.indexOf("Check:");
-                lines.add(index + 1, "  BanReason: \"  &cReason &8\\xbb &7%REASON%\"");
-                FileUtils.writeLines(file, lines);
-            } catch (IOException ex) {
-                ex.printStackTrace();
+                val file = File(mi.getDataFolder(), "Messages.yml")
+                val lines = FileUtils.readLines(file, Charset.defaultCharset())
+                val index = lines.indexOf("Check:")
+                lines.add(index + 1, "  BanReason: \"  &cReason &8\\xbb &7%REASON%\"")
+                FileUtils.writeLines(file, lines)
+            } catch (ex: IOException) {
+                ex.printStackTrace()
             }
         }
         if (!mi.contains(mi.getMessages(), "Tempipban")) {
             try {
-                FileUtils.writeLines(new File(mi.getDataFolder(), "Messages.yml"), Arrays.asList(
+                FileUtils.writeLines(
+                    File(mi.getDataFolder(), "Messages.yml"),
+                    listOf(
                         "",
                         "Tempipban:",
                         "  Usage: \"&cUsage &8\\xbb &7&o/tempipban [Name/IP] [Xmo/Xd/Xh/Xm/Xs/#TimeLayout] [Reason/@Layout]\"",
@@ -166,86 +154,120 @@ public class UpdateManager {
                         "ChangeReason:",
                         "  Usage: \"&cUsage &8\\xbb &7&o/change-reason [ID or ban/mute USER] [New reason]\"",
                         "  Done: \"&7Punishment &a&o#%ID% &7has successfully been updated!\"",
-                        "  NotFound: \"&cSorry we have not been able to find this punishment\""), true);
-            } catch (IOException e) {
-                e.printStackTrace();
+                        "  NotFound: \"&cSorry we have not been able to find this punishment\""
+                    ),
+                    true
+                )
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
         try {
-            File file = new File(mi.getDataFolder(), "config.yml");
-            List<String> lines = FileUtils.readLines(file, Charset.defaultCharset());
+            val file = File(mi.getDataFolder(), "config.yml")
+            val lines = FileUtils.readLines(file, Charset.defaultCharset())
             if (!mi.contains(mi.getConfig(), "EnableAllPermissionNodes")) {
+                lines.remove("  # Disable for cracked servers")
 
-                lines.remove("  # Disable for cracked servers");
-
-                int indexOf = lines.indexOf("UUID-Fetcher:");
+                val indexOf = lines.indexOf("UUID-Fetcher:")
                 if (indexOf != -1) {
-                    lines.addAll(indexOf + 1, Arrays.asList(
+                    lines.addAll(
+                        indexOf + 1,
+                        listOf(
                             "  # If dynamic it set to true it will override the 'enabled' and 'intern' settings",
                             "  # and automatically detect the best possible uuid fetcher settings for your server.",
                             "  # Our recommendation: don't set dynamic to false if you don't have any problems.",
-                            "  Dynamic: true"));
+                            "  Dynamic: true"
+                        )
+                    )
                 }
 
-                lines.addAll(Arrays.asList("",
+                lines.addAll(
+                    listOf(
+                        "",
                         "# This is useful for bungeecord servers or server with permission systems which do not support *-Perms",
                         "# So if you enable this you can use ab.all instead of ab.* or ab.ban.all instead of ab.ban.*",
                         "# This does not work with negative permissions! e.g. -ab.all would not block all commands for that user.",
-                        "EnableAllPermissionNodes: false"));
+                        "EnableAllPermissionNodes: false"
+                    )
+                )
             }
             if (!mi.contains(mi.getConfig(), "Debug")) {
-                lines.addAll(Arrays.asList(
+                lines.addAll(
+                    listOf(
                         "",
                         "# With this active will show more information in the console, such as errors, if",
                         "# the plugin works correctly is not recommended to activate it since it is",
                         "# designed to find bugs.",
-                        "Debug: false"));
+                        "Debug: false"
+                    )
+                )
             }
             if (mi.contains(mi.getConfig(), "Logs Purge Days")) {
-                lines.removeAll(Arrays.asList(
+                lines.removeAll(
+                    listOf(
                         "",
                         "# This is the amount of days that we should keep plugin logs in the plugins/AdvancedBan/logs folder.",
                         "# By default is set to 10 days.",
                         "Logs Purge Days: 10"
-                ));
+                    )
+                )
             }
             if (!mi.contains(mi.getConfig(), "Log Purge Days")) {
-                lines.addAll(Arrays.asList(
+                lines.addAll(
+                    listOf(
                         "",
                         "# This is the amount of days that we should keep plugin logs in the plugins/AdvancedBan/logs folder.",
                         "# By default is set to 10 days.",
                         "Log Purge Days: 10"
-                ));
+                    )
+                )
             }
             if (!mi.contains(mi.getConfig(), "Disable Prefix")) {
-                lines.addAll(Arrays.asList(
+                lines.addAll(
+                    listOf(
                         "",
                         "# Removes the prefix of the plugin in every message.",
                         "Disable Prefix: false"
-                ));
+                    )
+                )
             }
             if (!mi.contains(mi.getConfig(), "Friendly Register Commands")) {
-                lines.addAll(Arrays.asList("",
+                lines.addAll(
+                    listOf(
+                        "",
                         "# Register commands in a more friendly manner",
                         "# Off by default, so AdvancedBan can override /ban from other plugins",
                         "# This is a Bukkit-specific option. It has no meaning on BungeeCord",
-                        "Friendly Register Commands: false"));
+                        "Friendly Register Commands: false"
+                    )
+                )
             }
-            FileUtils.writeLines(file, lines);
-        } catch (IOException exc) {
-            exc.printStackTrace();
+            FileUtils.writeLines(file, lines)
+        } catch (exc: IOException) {
+            exc.printStackTrace()
         }
     }
 
-    private void addMessage(String search, String insert, int indexOffset) {
+    private fun addMessage(search: String, insert: String, indexOffset: Int) {
         try {
-            File file = new File(Universal.get().getMethods().getDataFolder(), "Messages.yml");
-            List<String> lines = FileUtils.readLines(file, "UTF8");
-            int index = lines.indexOf(search);
-            lines.add(index + indexOffset, insert);
-            FileUtils.writeLines(file, "UTF8", lines);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            val file = File(Universal.get().methods.getDataFolder(), "Messages.yml")
+            val lines = FileUtils.readLines(file, "UTF8")
+            val index = lines.indexOf(search)
+            lines.add(index + indexOffset, insert)
+            FileUtils.writeLines(file, "UTF8", lines)
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+        }
+    }
+
+    companion object {
+        @Volatile
+        private var instance: UpdateManager? = null
+
+        @Synchronized
+        fun get(): UpdateManager {
+            if (instance == null) instance = UpdateManager()
+            return instance!!
         }
     }
 }
