@@ -167,24 +167,22 @@ class BukkitMethods : MethodInterface {
         punishment.getLayout().forEach { sendMessage(target, it) }
     }
 
+    private fun getActiveMute(player: Any): Punishment? {
+        val uuid = UUIDManager.get().getUUID(getName(player)) ?: return null
+        return PunishmentManager.get().getMute(uuid)
+    }
+
     override fun callChat(player: Any): Boolean {
-        val uuid = UUIDManager.get().getUUID(getName(player)) ?: return false
-        val pnt = PunishmentManager.get().getMute(uuid)
-        if (pnt != null) {
-            sendPunishmentLayout(player, pnt)
-            return true
-        }
-        return false
+        val punishment = getActiveMute(player) ?: return false
+        sendPunishmentLayout(player, punishment)
+        return true
     }
 
     override fun callCMD(player: Any, cmd: String): Boolean {
-        val uuid = UUIDManager.get().getUUID(getName(player)) ?: return false
-        val pnt = PunishmentManager.get().getMute(uuid)
-        if (Universal.get().isMuteCommand(cmd.substring(1)) && pnt != null) {
-            sendPunishmentLayout(player, pnt)
-            return true
-        }
-        return false
+        if (!Universal.get().isMuteCommand(cmd.substring(1))) return false
+        val punishment = getActiveMute(player) ?: return false
+        sendPunishmentLayout(player, punishment)
+        return true
     }
 
     override fun getMySQLFile(): YamlConfiguration = mysql

@@ -157,22 +157,26 @@ class BungeeMethods : MethodInterface {
     override fun getInternUUID(player: Any): String = if (player is ProxiedPlayer) player.uniqueId.toString().replace("-", "") else "none"
     override fun getInternUUID(player: String): String? = getPlayer(player)?.uniqueId?.toString()?.replace("-", "")
 
+    private fun getActiveMute(player: Any): Punishment? {
+        val uuid = UUIDManager.get().getUUID(getName(player)) ?: return null
+        return PunishmentManager.get().getMute(uuid)
+    }
+
+    private fun sendPunishmentLayout(player: Any, punishment: Punishment) {
+        punishment.getLayout().forEach { sendMessage(player, it) }
+    }
+
     override fun callChat(player: Any): Boolean {
-        val punishment = PunishmentManager.get().getMute(UUIDManager.get().getUUID(getName(player)))
-        if (punishment != null) {
-            punishment.layout.forEach { sendMessage(player, it) }
-            return true
-        }
-        return false
+        val punishment = getActiveMute(player) ?: return false
+        sendPunishmentLayout(player, punishment)
+        return true
     }
 
     override fun callCMD(player: Any, cmd: String): Boolean {
-        val punishment = PunishmentManager.get().getMute(UUIDManager.get().getUUID(getName(player)))
-        if (Universal.get().isMuteCommand(cmd.substring(1)) && punishment != null) {
-            punishment.layout.forEach { sendMessage(player, it) }
-            return true
-        }
-        return false
+        if (!Universal.get().isMuteCommand(cmd.substring(1))) return false
+        val punishment = getActiveMute(player) ?: return false
+        sendPunishmentLayout(player, punishment)
+        return true
     }
 
     override fun getMySQLFile(): Any = mysql
