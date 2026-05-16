@@ -160,15 +160,16 @@ class BukkitMethods : MethodInterface {
     private fun sendPunishmentLayout(target: Any, punishment: Punishment) {
         if (target is Player) {
             FoliaSchedulers.runPlayer(target, pluginRef) {
-                punishment.layout.forEach { sendMessage(target, it) }
+                punishment.getLayout().forEach { sendMessage(target, it) }
             }
             return
         }
-        punishment.layout.forEach { sendMessage(target, it) }
+        punishment.getLayout().forEach { sendMessage(target, it) }
     }
 
     override fun callChat(player: Any): Boolean {
-        val pnt = PunishmentManager.get().getMute(UUIDManager.get().getUUID(getName(player)))
+        val uuid = UUIDManager.get().getUUID(getName(player)) ?: return false
+        val pnt = PunishmentManager.get().getMute(uuid)
         if (pnt != null) {
             sendPunishmentLayout(player, pnt)
             return true
@@ -177,7 +178,8 @@ class BukkitMethods : MethodInterface {
     }
 
     override fun callCMD(player: Any, cmd: String): Boolean {
-        val pnt = PunishmentManager.get().getMute(UUIDManager.get().getUUID(getName(player)))
+        val uuid = UUIDManager.get().getUUID(getName(player)) ?: return false
+        val pnt = PunishmentManager.get().getMute(uuid)
         if (Universal.get().isMuteCommand(cmd.substring(1)) && pnt != null) {
             sendPunishmentLayout(player, pnt)
             return true

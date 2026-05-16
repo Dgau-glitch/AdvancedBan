@@ -21,12 +21,12 @@ class InternalListener : org.bukkit.event.Listener {
         when (punishment.type) {
             PunishmentType.BAN, PunishmentType.TEMP_BAN -> {
                 val profile = Bukkit.createProfile(punishment.name)
-                profileBanList().addBan(profile, punishment.reason, Instant.ofEpochMilli(punishment.end), punishment.operator)
+                profileBanList().addBan(profile, punishment.getReason(), Instant.ofEpochMilli(punishment.end), punishment.operator)
             }
 
             PunishmentType.IP_BAN, PunishmentType.TEMP_IP_BAN -> {
                 InetAddress.getByName(punishment.name)?.let {
-                    ipBanList().addBan(it, punishment.reason, Instant.ofEpochMilli(punishment.end), punishment.operator)
+                    ipBanList().addBan(it, punishment.getReason(), Instant.ofEpochMilli(punishment.end), punishment.operator)
                 }
             }
 

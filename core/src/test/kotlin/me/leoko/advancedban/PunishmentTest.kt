@@ -25,13 +25,13 @@ class PunishmentTest {
         @JvmStatic
         @BeforeAll
         fun setupUniversal() {
-            Universal.get().setup(TestMethods(requireNotNull(dataFolder)))
+            CoreTestSupport.setupUniversal(requireNotNull(dataFolder))
         }
 
         @JvmStatic
         @AfterAll
         fun shutdownUniversal() {
-            Universal.get().shutdown()
+            CoreTestSupport.shutdownUniversal()
         }
     }
 
