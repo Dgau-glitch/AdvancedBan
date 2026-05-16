@@ -1,6 +1,7 @@
 plugins { kotlin("jvm") }
 
 dependencies {
+    implementation("com.google.code.gson:gson:2.11.0")
     compileOnly("net.md-5:bungeecord-api:1.12-SNAPSHOT")
     compileOnly("de.dytanic.cloudnet:cloudnet-driver:3.3.0-RELEASE")
     compileOnly("de.dytanic.cloudnet:cloudnet-bridge:3.3.0-RELEASE")

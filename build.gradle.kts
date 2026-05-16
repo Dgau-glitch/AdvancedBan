@@ -16,8 +16,8 @@ allprojects {
         maven("https://jitpack.io")
         maven("https://oss.sonatype.org/content/repositories/snapshots")
         maven("https://repo.codemc.org/repository/maven-public")
-        maven("https://cloudnetservice.eu/repositories")
-        maven("https://repo.cloudnetservice.eu/repository/releases/")
+        maven("https://repo.cloudnetservice.eu/releases")
+        maven("https://repo.cloudnetservice.eu/snapshots")
         maven("https://repo.md-5.net/content/repositories/snapshots/")
     }
 }

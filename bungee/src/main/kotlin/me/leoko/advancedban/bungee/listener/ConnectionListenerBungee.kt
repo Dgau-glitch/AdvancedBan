@@ -19,7 +19,7 @@ class ConnectionListenerBungee : Listener {
         if (event.isCancelled) return
 
         UUIDManager.get().supplyInternUUID(event.connection.name, event.connection.uniqueId)
-        event.registerIntent(Universal.get().methods.plugin as BungeeMain)
+        event.registerIntent(Universal.get().methods.getPlugin() as BungeeMain)
         Universal.get().methods.runAsync {
             val result = Universal.get().callConnection(event.connection.name, event.connection.address.address.hostAddress)
             if (result != null) {
@@ -34,7 +34,7 @@ class ConnectionListenerBungee : Listener {
             if (Universal.isRedis()) {
                 RedisBungee.getApi().sendChannelMessage("advancedban:connection", event.connection.name + "," + event.connection.address.address.hostAddress)
             }
-            event.completeIntent(Universal.get().methods.plugin as BungeeMain)
+            event.completeIntent(Universal.get().methods.getPlugin() as BungeeMain)
         }
     }
 

@@ -46,22 +46,17 @@ class BungeeMethods : MethodInterface {
     private lateinit var layouts: Configuration
     private lateinit var mysql: Configuration
 
-    private val permissionableGenerator: ((String) -> Permissionable)?
+    private val permissionableGenerator: ((String) -> Permissionable)? = when {
+        ProxyServer.getInstance().pluginManager.getPlugin("LuckPerms") != null -> { name: String -> LuckPermsOfflineUser(name) }
+        ProxyServer.getInstance().pluginManager.getPlugin("CloudNet-CloudPerms") != null -> { name: String -> CloudNetCloudPermsOfflineUser(name) }
+        else -> null
+    }
 
     init {
-        permissionableGenerator = when {
-            ProxyServer.getInstance().pluginManager.getPlugin("LuckPerms") != null -> {
-                log("[AdvancedBan] Offline permission support through LuckPerms active")
-                { name -> LuckPermsOfflineUser(name) }
-            }
-            ProxyServer.getInstance().pluginManager.getPlugin("CloudNet-CloudPerms") != null -> {
-                log("[AdvancedBan] Offline permission support through CloudNet-CloudPerms active")
-                { name -> CloudNetCloudPermsOfflineUser(name) }
-            }
-            else -> {
-                log("[AdvancedBan] No offline permission support through LuckPerms or CloudNet-CloudPerms")
-                null
-            }
+        when {
+            ProxyServer.getInstance().pluginManager.getPlugin("LuckPerms") != null -> log("[AdvancedBan] Offline permission support through LuckPerms active")
+            ProxyServer.getInstance().pluginManager.getPlugin("CloudNet-CloudPerms") != null -> log("[AdvancedBan] Offline permission support through CloudNet-CloudPerms active")
+            else -> log("[AdvancedBan] No offline permission support through LuckPerms or CloudNet-CloudPerms")
         }
     }
 
@@ -84,7 +79,7 @@ class BungeeMethods : MethodInterface {
     override fun getFromUrlJson(url: String, key: String): String? = try {
         val request = URL(url).openConnection() as HttpURLConnection
         request.connect()
-        var json = JsonParser.parseReader(InputStreamReader(request.inputStream)).asJsonObject
+        var json = JsonParser().parse(InputStreamReader(request.inputStream)).asJsonObject
         val keys = key.split("\\|")
         for (i in 0 until keys.size - 1) {
             json = json.getAsJsonObject(keys[i])
@@ -114,7 +109,7 @@ class BungeeMethods : MethodInterface {
     }
 
     override fun sendMessage(player: Any, msg: String) { (player as CommandSender).sendMessage(msg) }
-    override fun hasPerms(player: Any?, perms: String): Boolean = player != null && (player as CommandSender).hasPermission(perms)
+    override fun hasPerms(player: Any, perms: String): Boolean = (player as CommandSender).hasPermission(perms)
     override fun getOfflinePermissionPlayer(name: String): Permissionable = permissionableGenerator?.invoke(name) ?: Permissionable { false }
 
     override fun isOnline(name: String): Boolean = try {
@@ -182,14 +177,14 @@ class BungeeMethods : MethodInterface {
     override fun getMySQLFile(): Any = mysql
 
     override fun parseJSON(json: InputStreamReader, key: String): String? {
-        val element = JsonParser.parseReader(json)
+        val element = JsonParser().parse(json)
         if (element is JsonNull) return null
         val obj = (element as JsonObject).get(key)
         return obj?.asString
     }
 
     override fun parseJSON(json: String, key: String): String? {
-        val element = JsonParser.parseString(json)
+        val element = JsonParser().parse(json)
         if (element is JsonNull) return null
         val obj = (element as JsonObject).get(key)
         return obj?.asString

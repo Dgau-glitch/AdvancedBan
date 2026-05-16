@@ -26,9 +26,11 @@ class ChatListenerBungee : Listener {
         if (commandName.length > 1 && event.cursor.length > commandName.length) {
             val command = Command.getByName(commandName.substring(1))
             if (command != null && event.sender is ProxiedPlayer) {
-                if (command.permission == null || Universal.get().methods.hasPerms(event.sender, command.permission)) {
+                val permission = command.permission
+                val tabCompleter = command.tabCompleter
+                if (tabCompleter != null && (permission == null || Universal.get().methods.hasPerms(event.sender, permission))) {
                     val args = event.cursor.substring(commandName.length + 1).split(" ", ignoreCase = false, limit = -1).toTypedArray()
-                    event.suggestions.addAll(command.tabCompleter.onTabComplete(event.sender, args))
+                    event.suggestions.addAll(tabCompleter.onTabComplete(event.sender, args))
                 }
             }
         }

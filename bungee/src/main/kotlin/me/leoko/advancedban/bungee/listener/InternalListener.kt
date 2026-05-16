@@ -62,7 +62,7 @@ class InternalListener : Listener {
                 PunishmentType.valueOf(punishment["punishmenttype"].asString.uppercase()),
                 punishment["start"]?.asLong ?: TimeManager.getTime(),
                 TimeManager.getTime() + punishment["end"].asLong,
-                punishment["calculation"]?.asString,
+                punishment["calculation"]?.asString ?: "",
                 -1
             ).create(punishment["silent"]?.asBoolean == true)
 
