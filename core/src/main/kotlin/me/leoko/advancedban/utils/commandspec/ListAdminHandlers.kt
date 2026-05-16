@@ -15,7 +15,7 @@ import java.util.function.Consumer
  */
 object ListAdminHandlers {
     val checkHandler: Consumer<Command.CommandInput> = Consumer { input ->
-        val name = input.primary
+        val name = input.getPrimary()
         val uuid = processName(input) ?: return@Consumer
 
         val ip = Universal.get().ips.getOrDefault(name.lowercase(), "none cashed")
@@ -30,7 +30,7 @@ object ListAdminHandlers {
         val ipCached = PunishmentManager.get().isCached(ip)
         val uuidCached = PunishmentManager.get().isCached(uuid)
 
-        val sender = input.sender
+        val sender = input.getSender()
         MessageManager.sendMessage(sender, "Check.Header", true, "NAME", name, "CACHED", if (nameCached) cached else notCached)
         MessageManager.sendMessage(sender, "Check.UUID", false, "UUID", uuid, "CACHED", if (uuidCached) cached else notCached)
         if (Universal.get().hasPerms(sender, "ab.check.ip")) {
@@ -48,12 +48,12 @@ object ListAdminHandlers {
     val systemPreferencesHandler: Consumer<Command.CommandInput> = Consumer { input ->
         val mi = Universal.get().methods
         val calendar: Calendar = GregorianCalendar()
-        val sender = input.sender
+        val sender = input.getSender()
         mi.sendMessage(sender, "§c§lAdvancedBan v2 §cSystemPrefs")
         mi.sendMessage(sender, "§cServer-Time §8» §7${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}")
         mi.sendMessage(sender, "§cYour UUID (Intern) §8» §7${mi.getInternUUID(sender)}")
         if (input.hasNext()) {
-            val target = (input.primary ?: "").lowercase()
+            val target = (input.getPrimary() ?: "").lowercase()
             mi.sendMessage(sender, "§c$target's UUID (Intern) §8» §7${mi.getInternUUID(target)}")
             mi.sendMessage(sender, "§c$target's UUID (Fetched) §8» §7${UUIDManager.get().getUUID(target)}")
         }

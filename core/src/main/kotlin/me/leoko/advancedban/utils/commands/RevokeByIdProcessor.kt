@@ -12,15 +12,15 @@ class RevokeByIdProcessor(
     private val resolver: Function<Int, Punishment?>
 ) : Consumer<Command.CommandInput> {
     override fun accept(input: Command.CommandInput) {
-        val id = input.primary.toInt()
+        val id = input.getPrimary().toInt()
         val punishment = resolver.apply(id)
         if (punishment == null) {
-            MessageManager.sendMessage(input.sender, "$path.NotFound", true, "ID", id.toString())
+            MessageManager.sendMessage(input.getSender(), "$path.NotFound", true, "ID", id.toString())
             return
         }
 
-        val operator = Universal.get().methods.getName(input.sender)
+        val operator = Universal.get().methods.getName(input.getSender())
         punishment.delete(operator, false, true)
-        MessageManager.sendMessage(input.sender, "$path.Done", true, "ID", id.toString())
+        MessageManager.sendMessage(input.getSender(), "$path.Done", true, "ID", id.toString())
     }
 }

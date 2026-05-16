@@ -14,9 +14,9 @@ import java.util.function.Consumer
  */
 object ListGroupHandlers {
     val warnsHandler: Consumer<Command.CommandInput> = Consumer { input ->
-        if (input.hasNext() && !(input.primary ?: "").matches("[1-9][0-9]*".toRegex())) {
-            if (!Universal.get().hasPerms(input.sender, "ab.warns.other")) {
-                MessageManager.sendMessage(input.sender, "General.NoPerms", true)
+        if (input.hasNext() && !(input.getPrimary() ?: "").matches("[1-9][0-9]*".toRegex())) {
+            if (!Universal.get().hasPerms(input.getSender(), "ab.warns.other")) {
+                MessageManager.sendMessage(input.getSender(), "General.NoPerms", true)
                 return@Consumer
             }
 
@@ -25,12 +25,12 @@ object ListGroupHandlers {
                 "Warns", false, true
             ).accept(input)
         } else {
-            if (!Universal.get().hasPerms(input.sender, "ab.warns.own")) {
-                MessageManager.sendMessage(input.sender, "General.NoPerms", true)
+            if (!Universal.get().hasPerms(input.getSender(), "ab.warns.own")) {
+                MessageManager.sendMessage(input.getSender(), "General.NoPerms", true)
                 return@Consumer
             }
 
-            val name = Universal.get().methods.getName(input.sender)
+            val name = Universal.get().methods.getName(input.getSender())
             val identifier = me.leoko.advancedban.manager.UUIDManager.get().getUUID(name)
             ListProcessor(
                 { PunishmentManager.get().getPunishments(identifier ?: return@ListProcessor emptyList(), PunishmentType.WARNING, true) },
@@ -40,9 +40,9 @@ object ListGroupHandlers {
     }
 
     val notesHandler: Consumer<Command.CommandInput> = Consumer { input ->
-        if (input.hasNext() && !(input.primary ?: "").matches("[1-9][0-9]*".toRegex())) {
-            if (!Universal.get().hasPerms(input.sender, "ab.notes.other")) {
-                MessageManager.sendMessage(input.sender, "General.NoPerms", true)
+        if (input.hasNext() && !(input.getPrimary() ?: "").matches("[1-9][0-9]*".toRegex())) {
+            if (!Universal.get().hasPerms(input.getSender(), "ab.notes.other")) {
+                MessageManager.sendMessage(input.getSender(), "General.NoPerms", true)
                 return@Consumer
             }
 
@@ -51,12 +51,12 @@ object ListGroupHandlers {
                 "Notes", false, true
             ).accept(input)
         } else {
-            if (!Universal.get().hasPerms(input.sender, "ab.notes.own")) {
-                MessageManager.sendMessage(input.sender, "General.NoPerms", true)
+            if (!Universal.get().hasPerms(input.getSender(), "ab.notes.own")) {
+                MessageManager.sendMessage(input.getSender(), "General.NoPerms", true)
                 return@Consumer
             }
 
-            val name = Universal.get().methods.getName(input.sender)
+            val name = Universal.get().methods.getName(input.getSender())
             val identifier = me.leoko.advancedban.manager.UUIDManager.get().getUUID(name)
             ListProcessor(
                 { PunishmentManager.get().getPunishments(identifier ?: return@ListProcessor emptyList(), PunishmentType.NOTE, true) },

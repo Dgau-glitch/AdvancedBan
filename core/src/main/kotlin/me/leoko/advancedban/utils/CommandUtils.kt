@@ -13,18 +13,18 @@ object CommandUtils {
 
     @JvmStatic
     fun processName(input: Command.CommandInput): String? {
-        val name = input.primary
+        val name = input.getPrimary()
         input.next()
         val uuid = UUIDManager.get().getUUID(name.lowercase())
         if (uuid == null) {
-            MessageManager.sendMessage(input.sender, "General.FailedFetch", true, "NAME", name)
+            MessageManager.sendMessage(input.getSender(), "General.FailedFetch", true, "NAME", name)
         }
         return uuid
     }
 
     @JvmStatic
     fun processIP(input: Command.CommandInput): String? {
-        val name = input.primaryData
+        val name = input.getPrimaryData()
         input.next()
         if (name.matches(Regex("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$"))) {
             return name
@@ -32,7 +32,7 @@ object CommandUtils {
 
         val ip = Universal.get().ips[name]
         if (ip == null) {
-            MessageManager.sendMessage(input.sender, "Ipban.IpNotCashed", true, "NAME", name)
+            MessageManager.sendMessage(input.getSender(), "Ipban.IpNotCashed", true, "NAME", name)
         }
         return ip
     }
@@ -40,9 +40,9 @@ object CommandUtils {
     @JvmStatic
     fun processReason(input: Command.CommandInput): String? {
         val mi = Universal.get().methods
-        val reason = input.args.joinToString(" ")
-        if (reason.matches(Regex("[~@].+")) && !mi.contains(mi.getLayouts(), "Message." + input.primary.substring(1))) {
-            MessageManager.sendMessage(input.sender, "General.LayoutNotFound", true, "NAME", input.primary.substring(1))
+        val reason = input.getArgs().joinToString(" ")
+        if (reason.matches(Regex("[~@].+")) && !mi.contains(mi.getLayouts(), "Message." + input.getPrimary().substring(1))) {
+            MessageManager.sendMessage(input.getSender(), "General.LayoutNotFound", true, "NAME", input.getPrimary().substring(1))
             return null
         }
         return reason

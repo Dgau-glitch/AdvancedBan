@@ -13,9 +13,9 @@ import java.util.function.Consumer
 object AdminCommandHandlers {
     val advancedBanHandler: Consumer<Command.CommandInput> = Consumer { input ->
         val mi = Universal.get().methods
-        val sender = input.sender
+        val sender = input.getSender()
         if (input.hasNext()) {
-            val primary = (input.primary ?: "").lowercase()
+            val primary = (input.getPrimary() ?: "").lowercase()
             if (primary == "reload") {
                 if (Universal.get().hasPerms(sender, "ab.reload")) {
                     mi.loadFiles()

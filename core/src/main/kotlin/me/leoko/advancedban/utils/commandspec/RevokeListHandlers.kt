@@ -15,15 +15,15 @@ import java.util.function.Consumer
  */
 object RevokeListHandlers {
     val changeReasonHandler: Consumer<Command.CommandInput> = Consumer { input ->
-        val punishment = if (((input.primary ?: "").lowercase()).matches("[0-9]*".toRegex())) {
-            val id = ((input.primary ?: "").lowercase()).toInt()
+        val punishment = if (((input.getPrimary() ?: "").lowercase()).matches("[0-9]*".toRegex())) {
+            val id = ((input.getPrimary() ?: "").lowercase()).toInt()
             input.next()
             PunishmentManager.get().getPunishment(id)
         } else {
-            val type = PunishmentType.valueOf((input.primary ?: return@Consumer).uppercase())
+            val type = PunishmentType.valueOf((input.getPrimary() ?: return@Consumer).uppercase())
             input.next()
 
-            var target = input.primary ?: return@Consumer
+            var target = input.getPrimary() ?: return@Consumer
             if (!target.matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$".toRegex())) {
                 target = processName(input) ?: return@Consumer
             } else {
@@ -35,9 +35,9 @@ object RevokeListHandlers {
         val reason = processReason(input) ?: return@Consumer
         if (punishment != null) {
             punishment.updateReason(reason)
-            MessageManager.sendMessage(input.sender, "ChangeReason.Done", true, "ID", punishment.id.toString())
+            MessageManager.sendMessage(input.getSender(), "ChangeReason.Done", true, "ID", punishment.id.toString())
         } else {
-            MessageManager.sendMessage(input.sender, "ChangeReason.NotFound", true)
+            MessageManager.sendMessage(input.getSender(), "ChangeReason.NotFound", true)
         }
     }
 

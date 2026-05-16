@@ -16,22 +16,22 @@ import java.util.function.Consumer
 object RevokeCommandHandlers {
     val unWarnClearOrId: Consumer<Command.CommandInput> = Consumer { input ->
         val confSection = PunishmentType.WARNING.getName()
-        if ((input.primary ?: "").lowercase() == "clear") {
+        if ((input.getPrimary() ?: "").lowercase() == "clear") {
             input.next()
-            val name = input.primary
+            val name = input.getPrimary()
             val uuid = processName(input) ?: return@Consumer
 
             val punishments = PunishmentManager.get().getWarns(uuid)
             if (punishments.isEmpty()) {
-                MessageManager.sendMessage(input.sender, "Un$confSection.Clear.Empty", true, "NAME", name)
+                MessageManager.sendMessage(input.getSender(), "Un$confSection.Clear.Empty", true, "NAME", name)
                 return@Consumer
             }
 
-            val operator = Universal.get().methods.getName(input.sender)
+            val operator = Universal.get().methods.getName(input.getSender())
             for (punishment in punishments) {
                 punishment.delete(operator, true, true)
             }
-            MessageManager.sendMessage(input.sender, "Un$confSection.Clear.Done", true, "COUNT", punishments.size.toString())
+            MessageManager.sendMessage(input.getSender(), "Un$confSection.Clear.Done", true, "COUNT", punishments.size.toString())
         } else {
             RevokeByIdProcessor("Un$confSection", PunishmentManager.get()::getWarn).accept(input)
         }
@@ -39,22 +39,22 @@ object RevokeCommandHandlers {
 
     val unNoteClearOrId: Consumer<Command.CommandInput> = Consumer { input ->
         val confSection = PunishmentType.NOTE.getName()
-        if ((input.primary ?: "").lowercase() == "clear") {
+        if ((input.getPrimary() ?: "").lowercase() == "clear") {
             input.next()
-            val name = input.primary
+            val name = input.getPrimary()
             val uuid = processName(input) ?: return@Consumer
 
             val punishments = PunishmentManager.get().getNotes(uuid)
             if (punishments.isEmpty()) {
-                MessageManager.sendMessage(input.sender, "Un$confSection.Clear.Empty", true, "NAME", name)
+                MessageManager.sendMessage(input.getSender(), "Un$confSection.Clear.Empty", true, "NAME", name)
                 return@Consumer
             }
 
-            val operator = Universal.get().methods.getName(input.sender)
+            val operator = Universal.get().methods.getName(input.getSender())
             for (punishment in punishments) {
                 punishment.delete(operator, true, true)
             }
-            MessageManager.sendMessage(input.sender, "Un$confSection.Clear.Done", true, "COUNT", punishments.size.toString())
+            MessageManager.sendMessage(input.getSender(), "Un$confSection.Clear.Done", true, "COUNT", punishments.size.toString())
         } else {
             RevokeByIdProcessor("Un$confSection", PunishmentManager.get()::getNote).accept(input)
         }

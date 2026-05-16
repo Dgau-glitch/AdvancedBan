@@ -20,7 +20,7 @@ class ListProcessor(
         var target: String? = null
         var name = "invalid"
         if (hasTarget) {
-            target = input.primary
+            target = input.getPrimary()
             name = target
             if (!target.matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$".toRegex())) {
                 target = processName(input)
@@ -33,7 +33,7 @@ class ListProcessor(
         val mi = Universal.get().methods
         val punishments = listSupplier.apply(target).toMutableList()
         if (punishments.isEmpty()) {
-            MessageManager.sendMessage(input.sender, "$config.NoEntries", true, "NAME", name)
+            MessageManager.sendMessage(input.getSender(), "$config.NoEntries", true, "NAME", name)
             return
         }
 
@@ -43,15 +43,15 @@ class ListProcessor(
             expired
         }
 
-        val page = if (input.hasNext()) input.primary.toInt() else 1
+        val page = if (input.hasNext()) input.getPrimary().toInt() else 1
         if (punishments.size / 5.0 + 1 <= page) {
-            MessageManager.sendMessage(input.sender, "$config.OutOfIndex", true, "PAGE", page.toString())
+            MessageManager.sendMessage(input.getSender(), "$config.OutOfIndex", true, "PAGE", page.toString())
             return
         }
 
         val prefix = MessageManager.getMessage("General.Prefix")
         val header = MessageManager.getLayout(mi.getMessages(), "$config.Header", "PREFIX", prefix, "NAME", name)
-        header.forEach { line -> mi.sendMessage(input.sender, line) }
+        header.forEach { line -> mi.sendMessage(input.getSender(), line) }
 
         val format = SimpleDateFormat(mi.getString(mi.getConfig(), "DateFormat", "dd.MM.yyyy-HH:mm"))
         for (i in (page - 1) * 5 until page * 5) {
@@ -69,18 +69,18 @@ class ListProcessor(
                 "ID", punishment.id.toString(),
                 "DATE", format.format(Date(punishment.start))
             )
-            entryLayout.forEach { line -> mi.sendMessage(input.sender, line) }
+            entryLayout.forEach { line -> mi.sendMessage(input.getSender(), line) }
         }
 
         MessageManager.sendMessage(
-            input.sender, "$config.Footer", false,
+            input.getSender(), "$config.Footer", false,
             "CURRENT_PAGE", page.toString(),
             "TOTAL_PAGES", (punishments.size / 5 + if (punishments.size % 5 != 0) 1 else 0).toString(),
             "COUNT", punishments.size.toString()
         )
         if (punishments.size / 5.0 + 1 > page + 1) {
             MessageManager.sendMessage(
-                input.sender, "$config.PageFooter", false,
+                input.getSender(), "$config.PageFooter", false,
                 "NEXT_PAGE", (page + 1).toString(), "NAME", name
             )
         }

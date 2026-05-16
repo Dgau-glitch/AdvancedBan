@@ -19,11 +19,11 @@ import java.util.function.Function
 class PunishmentProcessor(private val type: PunishmentType) : Consumer<Command.CommandInput> {
     override fun accept(input: Command.CommandInput) {
         val silent = processTag(input, "-s")
-        val name = input.primary
+        val name = input.getPrimary()
 
         val target = if (type.isIpOrientated()) processIP(input) else processName(input)
         if (target == null) return
-        if (processExempt(name, target, input.sender, type)) return
+        if (processExempt(name, target, input.getSender(), type)) return
 
         var end = -1L
         var timeTemplate = ""
@@ -37,20 +37,20 @@ class PunishmentProcessor(private val type: PunishmentType) : Consumer<Command.C
         if (reason?.isEmpty() == true) reason = null
 
         val mi: MethodInterface = Universal.get().methods
-        val operator = mi.getName(input.sender)
+        val operator = mi.getName(input.getSender())
         replaceExistingPunishment(target, type, operator)
         Punishment.create(name, target, reason, operator, type, end, timeTemplate, silent)
-        MessageManager.sendMessage(input.sender, "${type.getBasic().getName()}.Done", true, "NAME", name)
+        MessageManager.sendMessage(input.getSender(), "${type.getBasic().getName()}.Done", true, "NAME", name)
     }
 
     private fun processTime(input: Command.CommandInput, uuid: String, type: PunishmentType): TimeCalculation? {
-        val time = input.primary
+        val time = input.getPrimary()
         input.next()
         val mi: MethodInterface = Universal.get().methods
         if (time.matches("#.+".toRegex())) {
             val layout = time.substring(1)
             if (!mi.contains(mi.getLayouts(), "Time.$layout")) {
-                MessageManager.sendMessage(input.sender, "General.LayoutNotFound", true, "NAME", layout)
+                MessageManager.sendMessage(input.getSender(), "General.LayoutNotFound", true, "NAME", layout)
                 return null
             }
             val i = PunishmentManager.get().getCalculationLevel(uuid, layout)
@@ -61,10 +61,10 @@ class PunishmentProcessor(private val type: PunishmentType) : Consumer<Command.C
         }
 
         val toAdd = TimeManager.toMilliSec(time)
-        if (!Universal.get().hasPerms(input.sender, "ab.${type.getName()}.dur.max")) {
+        if (!Universal.get().hasPerms(input.getSender(), "ab.${type.getName()}.dur.max")) {
             var max = -1L
             for (i in 10 downTo 1) {
-                if (Universal.get().hasPerms(input.sender, "ab.${type.getName()}.dur.$i")
+                if (Universal.get().hasPerms(input.getSender(), "ab.${type.getName()}.dur.$i")
                     && mi.contains(mi.getConfig(), "TempPerms.$i")
                 ) {
                     max = mi.getLong(mi.getConfig(), "TempPerms.$i")!! * 1000
@@ -72,7 +72,7 @@ class PunishmentProcessor(private val type: PunishmentType) : Consumer<Command.C
                 }
             }
             if (max != -1L && toAdd > max) {
-                MessageManager.sendMessage(input.sender, "${type.getName()}.MaxDuration", true, "MAX", (max / 1000).toString())
+                MessageManager.sendMessage(input.getSender(), "${type.getName()}.MaxDuration", true, "MAX", (max / 1000).toString())
                 return null
             }
         }
@@ -99,7 +99,7 @@ class PunishmentProcessor(private val type: PunishmentType) : Consumer<Command.C
     }
 
     private fun processTag(input: Command.CommandInput, tag: String): Boolean {
-        val args = input.args
+        val args = input.getArgs()
         for (i in args.indices) {
             if (i >= 4) break
             if (tag.equals(args[i], ignoreCase = true)) {

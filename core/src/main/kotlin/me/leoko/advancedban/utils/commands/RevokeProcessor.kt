@@ -10,7 +10,7 @@ import java.util.function.Consumer
 
 class RevokeProcessor(private val type: PunishmentType) : Consumer<Command.CommandInput> {
     override fun accept(input: Command.CommandInput) {
-        val name = input.primary
+        val name = input.getPrimary()
         var target: String? = name
         if (!target!!.matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$".toRegex())) {
             target = processName(input)
@@ -19,12 +19,12 @@ class RevokeProcessor(private val type: PunishmentType) : Consumer<Command.Comma
 
         val punishment = getPunishment(target, type)
         if (punishment == null) {
-            MessageManager.sendMessage(input.sender, "Un${type.name}.NotPunished", true, "NAME", name)
+            MessageManager.sendMessage(input.getSender(), "Un${type.name}.NotPunished", true, "NAME", name)
             return
         }
 
-        val operator = Universal.get().methods.getName(input.sender)
+        val operator = Universal.get().methods.getName(input.getSender())
         punishment.delete(operator, false, true)
-        MessageManager.sendMessage(input.sender, "Un${type.name}.Done", true, "NAME", name)
+        MessageManager.sendMessage(input.getSender(), "Un${type.name}.Done", true, "NAME", name)
     }
 }

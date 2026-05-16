@@ -16,8 +16,8 @@ object PunishmentCommandHandlers {
     }
 
     val kickHandler: Consumer<Command.CommandInput> = Consumer { input ->
-        if (!Universal.get().methods.isOnline((input.primary ?: "").lowercase())) {
-            MessageManager.sendMessage(input.sender, "Kick.NotOnline", true, "NAME", input.primary)
+        if (!Universal.get().methods.isOnline((input.getPrimary() ?: "").lowercase())) {
+            MessageManager.sendMessage(input.getSender(), "Kick.NotOnline", true, "NAME", input.getPrimary())
             return@Consumer
         }
         PunishmentProcessor(PunishmentType.KICK).accept(input)
