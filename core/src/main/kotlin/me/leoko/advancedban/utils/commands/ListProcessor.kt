@@ -38,7 +38,7 @@ class ListProcessor(
         }
 
         punishments.removeIf { punishment ->
-            val expired = punishment.isExpired && !history
+            val expired = punishment.isExpired() && !history
             if (expired) punishment.delete()
             expired
         }
@@ -64,7 +64,7 @@ class ListProcessor(
                 "NAME", nameOrIp,
                 "DURATION", punishment.getDuration(history),
                 "OPERATOR", punishment.operator,
-                "REASON", punishment.reason,
+                "REASON", punishment.getReason(),
                 "TYPE", punishment.type.getName(),
                 "ID", punishment.id.toString(),
                 "DATE", format.format(Date(punishment.start))

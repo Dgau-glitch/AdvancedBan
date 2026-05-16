@@ -9,7 +9,7 @@ data class InterimData(
     val punishments: Set<Punishment>,
     val history: Set<Punishment>
 ) {
-    fun getBan(): Punishment? = punishments.firstOrNull { it.type.getBasic() == PunishmentType.BAN && !it.isExpired }
+    fun getBan(): Punishment? = punishments.firstOrNull { it.type.getBasic() == PunishmentType.BAN && !it.isExpired() }
 
     fun accept() {
         PunishmentManager.get().getLoadedPunishments(false).addAll(punishments)
