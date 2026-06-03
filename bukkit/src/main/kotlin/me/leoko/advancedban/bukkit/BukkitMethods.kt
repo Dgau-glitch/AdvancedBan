@@ -204,7 +204,14 @@ class BukkitMethods : MethodInterface {
     override fun getLong(file: Any, path: String, def: Long): Long = (file as YamlConfiguration).getLong(path, def)
     override fun getInteger(file: Any, path: String, def: Int): Int = (file as YamlConfiguration).getInt(path, def)
     override fun contains(file: Any, path: String): Boolean = (file as YamlConfiguration).contains(path)
-    override fun getFileName(file: Any): String = (file as YamlConfiguration).name
+    override fun getFileName(file: Any): String = when (file) {
+        config -> "config.yml"
+        messages -> "Messages.yml"
+        layouts -> "Layouts.yml"
+        mysql -> if (mysqlFile.exists()) "MySQL.yml" else "config.yml"
+        is YamlConfiguration -> file.name.takeIf { it.isNotBlank() } ?: "unknown.yml"
+        else -> "unknown.yml"
+    }
     private fun callPluginEvent(event: org.bukkit.event.Event) {
         FoliaSchedulers.runGlobal(pluginRef) { Bukkit.getPluginManager().callEvent(event) }
     }
