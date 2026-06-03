@@ -5,20 +5,21 @@ import me.leoko.advancedban.utils.Command
 
 class CommandManager {
     fun onCommand(sender: Any, cmd: String, args: Array<String>) {
-        Universal.get().methods.runAsync {
-            val command = Command.getByName(cmd) ?: return@runAsync
+        val methods = Universal.get().methods
+        val command = Command.getByName(cmd) ?: return
 
-            val permission = command.permission
-            if (permission != null && !Universal.get().hasPerms(sender, permission)) {
-                MessageManager.sendMessage(sender, "General.NoPerms", true)
-                return@runAsync
-            }
+        val permission = command.permission
+        if (permission != null && !Universal.get().hasPerms(sender, permission)) {
+            MessageManager.sendMessage(sender, "General.NoPerms", true)
+            return
+        }
 
-            if (!command.validateArguments(args)) {
-                MessageManager.sendMessage(sender, command.usagePath, true)
-                return@runAsync
-            }
+        if (!command.validateArguments(args)) {
+            MessageManager.sendMessage(sender, command.usagePath, true)
+            return
+        }
 
+        methods.runAsync {
             command.execute(sender, args)
         }
     }

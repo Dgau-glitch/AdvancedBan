@@ -118,6 +118,8 @@ Acceptance criteria:
 
 ### 7) Connection listener safety pass
 
+**Status:** Completed in the connection listener safety pass.
+
 **Task:** Audit login, join, and quit flows under Folia.
 
 Acceptance criteria:
@@ -128,6 +130,8 @@ Acceptance criteria:
 - `PlayerQuitEvent` data/cache cleanup is safe for concurrent access and does not mutate player/world state.
 
 ### 8) Command execution and tab-completion pass
+
+**Status:** Completed in the command execution and tab-completion pass.
 
 **Task:** Make command execution and completions Folia-safe and permission-first.
 

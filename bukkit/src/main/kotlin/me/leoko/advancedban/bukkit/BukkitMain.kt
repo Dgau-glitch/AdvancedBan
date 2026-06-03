@@ -6,6 +6,7 @@ import me.leoko.advancedban.bukkit.listener.CommandListener
 import me.leoko.advancedban.bukkit.listener.ConnectionListener
 import me.leoko.advancedban.bukkit.listener.InternalListener
 import me.leoko.advancedban.bukkit.utils.FoliaSchedulers
+import me.leoko.advancedban.bukkit.utils.OnlinePlayerNameCache
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
@@ -22,8 +23,11 @@ class BukkitMain : JavaPlugin() {
         server.pluginManager.registerEvents(CommandListener(), this)
         server.pluginManager.registerEvents(InternalListener(), this)
 
+        val onlinePlayers = Bukkit.getOnlinePlayers().toTypedArray()
+        OnlinePlayerNameCache.replaceAll(onlinePlayers.map { it.name })
+
         // Snapshot only; every player mutation below is routed back to the player/entity scheduler.
-        Bukkit.getOnlinePlayers().forEach { player ->
+        onlinePlayers.forEach { player ->
             Universal.get().callConnection(player.name, player.address?.address?.hostAddress ?: "")?.let { reason ->
                 FoliaSchedulers.runPlayer(player, this) { player.kick(Component.text(reason)) }
             }

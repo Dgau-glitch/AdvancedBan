@@ -9,10 +9,11 @@ import java.net.URL
 import java.util.Date
 import java.util.Scanner
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 class UUIDManager {
     private var mode: FetcherMode? = null
-    private val activeUUIDs: MutableMap<String, String> = HashMap()
+    private val activeUUIDs: MutableMap<String, String> = ConcurrentHashMap()
 
     private fun mi(): MethodInterface = Universal.get().methods
 

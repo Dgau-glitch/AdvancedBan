@@ -6,6 +6,7 @@ import me.leoko.advancedban.bukkit.event.PunishmentEvent
 import me.leoko.advancedban.bukkit.event.RevokePunishmentEvent
 import me.leoko.advancedban.bukkit.listener.CommandReceiver
 import me.leoko.advancedban.bukkit.utils.FoliaSchedulers
+import me.leoko.advancedban.bukkit.utils.OnlinePlayerNameCache
 import me.leoko.advancedban.manager.PunishmentManager
 import me.leoko.advancedban.manager.UUIDManager
 import me.leoko.advancedban.utils.Permissionable
@@ -34,6 +35,8 @@ import java.util.UUID
 import java.util.function.BiFunction
 
 class BukkitMethods : MethodInterface {
+    private data class CachedOnlinePlayerName(val name: String)
+
     private val legacySerializer: LegacyComponentSerializer = LegacyComponentSerializer.legacySection()
     private val plainSerializer: PlainTextComponentSerializer = PlainTextComponentSerializer.plainText()
     private val messageFile = File(dataFolderRef, "Messages.yml")
@@ -104,11 +107,9 @@ class BukkitMethods : MethodInterface {
         val command: PluginCommand? = if (friendly) pluginRef.getCommand(cmd) else Bukkit.getPluginCommand(cmd)
         if (command != null) {
             command.setExecutor(CommandReceiver.get())
-            if (tabCompleter != null) {
-                command.tabCompleter = org.bukkit.command.TabCompleter { sender, _, _, args ->
-                    if (permission != null && !hasPerms(sender, permission)) return@TabCompleter Collections.emptyList()
-                    tabCompleter.onTabComplete(sender, args)
-                }
+            command.tabCompleter = org.bukkit.command.TabCompleter { sender, _, _, args ->
+                if (permission != null && !hasPerms(sender, permission)) return@TabCompleter Collections.emptyList()
+                tabCompleter?.onTabComplete(sender, args) ?: Collections.emptyList()
             }
         } else {
             println("AdvancedBan >> Failed to register command $cmd")
@@ -158,7 +159,7 @@ class BukkitMethods : MethodInterface {
             }
         }
     }
-    override fun getOnlinePlayers(): Array<Player> = onlinePlayersSnapshot()
+    override fun getOnlinePlayers(): Array<Any> = OnlinePlayerNameCache.snapshot().map(::CachedOnlinePlayerName).toTypedArray()
     override fun scheduleAsyncRep(rn: Runnable, l1: Long, l2: Long) {
         FoliaSchedulers.runAsyncRepeating(pluginRef, l1, l2) { rn.run() }
     }
@@ -174,7 +175,11 @@ class BukkitMethods : MethodInterface {
     override fun executeCommand(cmd: String) {
         FoliaSchedulers.runGlobal(pluginRef) { Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd) }
     }
-    override fun getName(player: Any): String = (player as CommandSender).name
+    override fun getName(player: Any): String = when (player) {
+        is CachedOnlinePlayerName -> player.name
+        is CommandSender -> player.name
+        else -> player.toString()
+    }
     override fun getName(uuid: String): String? = Bukkit.getOfflinePlayer(UUID.fromString(uuid)).name
     override fun getIP(player: Any): String = (player as Player).address.hostName
     override fun getInternUUID(player: Any): String = if (player is OfflinePlayer) player.uniqueId.toString().replace("-", "") else "none"

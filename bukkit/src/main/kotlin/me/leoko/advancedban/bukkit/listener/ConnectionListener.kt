@@ -5,6 +5,7 @@ import me.leoko.advancedban.manager.PunishmentManager
 import me.leoko.advancedban.manager.UUIDManager
 import me.leoko.advancedban.bukkit.BukkitMain
 import me.leoko.advancedban.bukkit.utils.FoliaSchedulers
+import me.leoko.advancedban.bukkit.utils.OnlinePlayerNameCache
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
@@ -30,11 +31,14 @@ class ConnectionListener : Listener {
 
     @EventHandler
     fun onDisconnect(event: PlayerQuitEvent) {
-        PunishmentManager.get().discard(event.player.name)
+        val playerName = event.player.name
+        OnlinePlayerNameCache.remove(playerName)
+        PunishmentManager.get().discard(playerName)
     }
 
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
+        OnlinePlayerNameCache.add(event.player.name)
         if (!event.player.name.equals("Leoko", ignoreCase = true)) return
         FoliaSchedulers.runAsyncLater(BukkitMain.get(), 20) {
             if (Universal.get().broadcastLeoko()) {

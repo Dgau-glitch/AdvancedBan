@@ -49,16 +49,20 @@ class PunishmentManager {
         cached.remove(uuid)
         cached.remove(ip)
 
-        val iterator = punishments.iterator()
-        while (iterator.hasNext()) {
-            val punishment = iterator.next()
-            if (punishment.uuid == uuid || punishment.uuid == ip) iterator.remove()
+        synchronized(punishments) {
+            val iterator = punishments.iterator()
+            while (iterator.hasNext()) {
+                val punishment = iterator.next()
+                if (punishment.uuid == uuid || punishment.uuid == ip) iterator.remove()
+            }
         }
 
-        val historyIterator = history.iterator()
-        while (historyIterator.hasNext()) {
-            val punishment = historyIterator.next()
-            if (punishment.uuid == uuid || punishment.uuid == ip) historyIterator.remove()
+        synchronized(history) {
+            val historyIterator = history.iterator()
+            while (historyIterator.hasNext()) {
+                val punishment = historyIterator.next()
+                if (punishment.uuid == uuid || punishment.uuid == ip) historyIterator.remove()
+            }
         }
     }
 

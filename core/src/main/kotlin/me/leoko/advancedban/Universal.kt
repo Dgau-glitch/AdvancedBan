@@ -22,9 +22,10 @@ import java.sql.SQLException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Scanner
+import java.util.concurrent.ConcurrentHashMap
 
 class Universal {
-    val ips: MutableMap<String, String> = HashMap()
+    val ips: MutableMap<String, String> = ConcurrentHashMap()
     lateinit var methods: MethodInterface
         private set
     private lateinit var logManager: LogManager
