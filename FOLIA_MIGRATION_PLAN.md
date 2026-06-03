@@ -93,6 +93,8 @@ Acceptance criteria:
 
 ### 5) Global server operation audit
 
+**Status:** Completed in the global server operation audit pass.
+
 **Task:** Route global Bukkit operations through `GlobalRegionScheduler`.
 
 Acceptance criteria:
@@ -102,6 +104,8 @@ Acceptance criteria:
 - No direct global mutation remains in async callbacks.
 
 ### 6) Ban API correctness pass
+
+**Status:** Completed in the typed ban-list correctness pass.
 
 **Task:** Finish typed Paper/Folia ban-list behavior.
 

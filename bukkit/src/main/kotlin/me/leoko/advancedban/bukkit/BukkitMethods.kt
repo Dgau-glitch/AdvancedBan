@@ -150,9 +150,11 @@ class BukkitMethods : MethodInterface {
     override fun isOnline(name: String): Boolean = Bukkit.getOfflinePlayer(name).isOnline
     override fun getPlayer(name: String): Player? = Bukkit.getPlayer(name)
     override fun kickPlayer(player: String, reason: String) {
-        getPlayer(player)?.let { target ->
-            FoliaSchedulers.runPlayer(target, pluginRef) {
-                if (target.isOnline) target.kick(Component.text(reason))
+        FoliaSchedulers.runGlobal(pluginRef) {
+            getPlayer(player)?.let { target ->
+                FoliaSchedulers.runPlayer(target, pluginRef) {
+                    if (target.isOnline) target.kick(Component.text(reason))
+                }
             }
         }
     }
@@ -215,15 +217,26 @@ class BukkitMethods : MethodInterface {
     override fun getInteger(file: Any, path: String, def: Int): Int = (file as YamlConfiguration).getInt(path, def)
     override fun contains(file: Any, path: String): Boolean = (file as YamlConfiguration).contains(path)
     override fun getFileName(file: Any): String = (file as YamlConfiguration).name
-    override fun callPunishmentEvent(punishment: Punishment) { runSync { Bukkit.getPluginManager().callEvent(PunishmentEvent(punishment)) } }
-    override fun callRevokePunishmentEvent(punishment: Punishment, massClear: Boolean) { runSync { Bukkit.getPluginManager().callEvent(RevokePunishmentEvent(punishment, massClear)) } }
+    private fun callPluginEvent(event: org.bukkit.event.Event) {
+        FoliaSchedulers.runGlobal(pluginRef) { Bukkit.getPluginManager().callEvent(event) }
+    }
+
+    override fun callPunishmentEvent(punishment: Punishment) {
+        callPluginEvent(PunishmentEvent(punishment))
+    }
+
+    override fun callRevokePunishmentEvent(punishment: Punishment, massClear: Boolean) {
+        callPluginEvent(RevokePunishmentEvent(punishment, massClear))
+    }
     override fun isOnlineMode(): Boolean = Bukkit.getOnlineMode()
 
     override fun notify(perm: String, notification: List<String>) {
-        onlinePlayersSnapshot().forEach { player ->
-            FoliaSchedulers.runPlayer(player, pluginRef) {
-                if (hasPerms(player, perm)) {
-                    notification.forEach { sendMessageNow(player, it) }
+        FoliaSchedulers.runGlobal(pluginRef) {
+            onlinePlayersSnapshot().forEach { player ->
+                FoliaSchedulers.runPlayer(player, pluginRef) {
+                    if (hasPerms(player, perm)) {
+                        notification.forEach { sendMessageNow(player, it) }
+                    }
                 }
             }
         }
