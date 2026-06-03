@@ -22,6 +22,7 @@ class BukkitMain : JavaPlugin() {
         server.pluginManager.registerEvents(CommandListener(), this)
         server.pluginManager.registerEvents(InternalListener(), this)
 
+        // Snapshot only; every player mutation below is routed back to the player/entity scheduler.
         Bukkit.getOnlinePlayers().forEach { player ->
             Universal.get().callConnection(player.name, player.address?.address?.hostAddress ?: "")?.let { reason ->
                 FoliaSchedulers.runPlayer(player, this) { player.kick(Component.text(reason)) }

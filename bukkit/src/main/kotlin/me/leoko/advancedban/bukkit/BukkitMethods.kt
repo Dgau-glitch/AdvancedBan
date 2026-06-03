@@ -115,8 +115,28 @@ class BukkitMethods : MethodInterface {
         }
     }
 
+    private fun deserializeMessage(msg: String): Component = legacySerializer.deserialize(msg)
+
+    private fun sendMessageNow(sender: CommandSender, msg: String) {
+        sender.sendMessage(deserializeMessage(msg))
+    }
+
+    private fun deliverMessages(sender: CommandSender, messages: Iterable<String>) {
+        if (sender is Player) {
+            FoliaSchedulers.runPlayer(sender, pluginRef) {
+                messages.forEach { sendMessageNow(sender, it) }
+            }
+        } else {
+            FoliaSchedulers.runGlobal(pluginRef) {
+                messages.forEach { sendMessageNow(sender, it) }
+            }
+        }
+    }
+
+    private fun onlinePlayersSnapshot(): Array<Player> = Bukkit.getOnlinePlayers().toTypedArray()
+
     override fun sendMessage(player: Any, msg: String) {
-        (player as CommandSender).sendMessage(legacySerializer.deserialize(msg))
+        deliverMessages(player as CommandSender, listOf(msg))
     }
     override fun hasPerms(player: Any, perms: String): Boolean = (player as CommandSender).hasPermission(perms)
 
@@ -129,8 +149,14 @@ class BukkitMethods : MethodInterface {
 
     override fun isOnline(name: String): Boolean = Bukkit.getOfflinePlayer(name).isOnline
     override fun getPlayer(name: String): Player? = Bukkit.getPlayer(name)
-    override fun kickPlayer(player: String, reason: String) { getPlayer(player)?.takeIf { it.isOnline }?.kick(Component.text(reason)) }
-    override fun getOnlinePlayers(): Array<Player> = Bukkit.getOnlinePlayers().toTypedArray()
+    override fun kickPlayer(player: String, reason: String) {
+        getPlayer(player)?.let { target ->
+            FoliaSchedulers.runPlayer(target, pluginRef) {
+                if (target.isOnline) target.kick(Component.text(reason))
+            }
+        }
+    }
+    override fun getOnlinePlayers(): Array<Player> = onlinePlayersSnapshot()
     override fun scheduleAsyncRep(rn: Runnable, l1: Long, l2: Long) {
         FoliaSchedulers.runAsyncRepeating(pluginRef, l1, l2) { rn.run() }
     }
@@ -154,13 +180,7 @@ class BukkitMethods : MethodInterface {
 
 
     private fun sendPunishmentLayout(target: Any, punishment: Punishment) {
-        if (target is Player) {
-            FoliaSchedulers.runPlayer(target, pluginRef) {
-                punishment.getLayout().forEach { sendMessage(target, it) }
-            }
-            return
-        }
-        punishment.getLayout().forEach { sendMessage(target, it) }
+        deliverMessages(target as CommandSender, punishment.getLayout())
     }
 
     private fun getActiveMute(player: Any): Punishment? {
@@ -200,14 +220,20 @@ class BukkitMethods : MethodInterface {
     override fun isOnlineMode(): Boolean = Bukkit.getOnlineMode()
 
     override fun notify(perm: String, notification: List<String>) {
-        Bukkit.getOnlinePlayers().filter { hasPerms(it, perm) }.forEach { player ->
+        onlinePlayersSnapshot().forEach { player ->
             FoliaSchedulers.runPlayer(player, pluginRef) {
-                notification.forEach { sendMessage(player, it) }
+                if (hasPerms(player, perm)) {
+                    notification.forEach { sendMessageNow(player, it) }
+                }
             }
         }
     }
 
-    override fun log(msg: String) { Bukkit.getConsoleSender().sendMessage(legacySerializer.deserialize(msg.replace("&", "§"))) }
+    override fun log(msg: String) {
+        FoliaSchedulers.runGlobal(pluginRef) {
+            Bukkit.getConsoleSender().sendMessage(legacySerializer.deserialize(msg.replace("&", "§")))
+        }
+    }
     override fun isUnitTesting(): Boolean = false
 
     private val pluginRef: JavaPlugin get() = BukkitMain.get()

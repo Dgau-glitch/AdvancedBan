@@ -64,6 +64,8 @@ Acceptance criteria:
 
 ### 3) MethodInterface thread-context split
 
+**Status:** Completed in the MethodInterface context documentation pass.
+
 **Task:** Split Bukkit platform operations by execution context instead of treating all of them as generic sync methods.
 
 Acceptance criteria:
@@ -78,6 +80,8 @@ Acceptance criteria:
 - Keep the public core interface stable unless a compatibility adapter is added.
 
 ### 4) Player and entity operation audit
+
+**Status:** Completed in the player/entity scheduler audit pass.
 
 **Task:** Make all player-targeting code run through entity/player scheduler.
 

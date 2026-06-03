@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender
 class CommandReceiver private constructor() : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         if (args.isNotEmpty()) {
+            // Lookup-only normalization; command execution must schedule any later player mutation explicitly.
             val onlineTarget = Bukkit.getPlayer(args[0])
             args[0] = onlineTarget?.name ?: args[0]
         }

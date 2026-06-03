@@ -39,6 +39,7 @@ class ConnectionListener : Listener {
         FoliaSchedulers.runAsyncLater(BukkitMain.get(), 20) {
             if (Universal.get().broadcastLeoko()) {
                 val message = legacySerializer.deserialize("§c§lAdvancedBan §8§l» §7My creator §c§oLeoko §7just joined the game ^^")
+                // Snapshot only; each player receives the message through its own entity scheduler.
                 Bukkit.getOnlinePlayers().forEach { online ->
                     FoliaSchedulers.runPlayer(online, BukkitMain.get()) { online.sendMessage(message) }
                 }
