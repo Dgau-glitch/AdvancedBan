@@ -81,10 +81,6 @@ class BukkitMethods : MethodInterface {
     override fun getMessages(): YamlConfiguration = messages
     override fun getLayouts(): YamlConfiguration = layouts
 
-    override fun setupMetrics() {
-        // bStats removed intentionally
-    }
-
     override fun isBungee(): Boolean = false
     override fun clearFormatting(text: String): String = TextComponents.stripLegacy(text)
     override fun getPlugin(): JavaPlugin = pluginRef

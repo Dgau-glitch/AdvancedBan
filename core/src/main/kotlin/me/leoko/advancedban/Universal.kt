@@ -45,7 +45,6 @@ class Universal {
             debugException(ex)
         }
 
-        mi.setupMetrics()
         PunishmentManager.get().setup()
 
         for (command in Command.entries) {

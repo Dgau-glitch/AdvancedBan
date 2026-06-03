@@ -91,10 +91,6 @@ class BungeeMethods : MethodInterface {
     override fun getMessages(): Configuration = messages
     override fun getLayouts(): Configuration = layouts
 
-    override fun setupMetrics() {
-        // bStats removed intentionally
-    }
-
     override fun isBungee(): Boolean = true
     override fun clearFormatting(text: String): String? = ChatColor.stripColor(text)
     override fun getPlugin(): Plugin = pluginRef

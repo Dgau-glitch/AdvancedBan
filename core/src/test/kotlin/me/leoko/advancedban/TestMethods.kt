@@ -15,7 +15,6 @@ class TestMethods(private val dataFolder: File) : MethodInterface {
     override fun getConfig(): Any = Any()
     override fun getMessages(): Any = Any()
     override fun getLayouts(): Any = fail("This method has not been setup for tests yet. Edit the me.leoko.advancedban.TestMethods Class! #5")
-    override fun setupMetrics() {}
     override fun isBungee(): Boolean = false
     override fun clearFormatting(text: String): String = text
     override fun getPlugin(): Any = fail("This method has not been setup for tests yet. Edit the me.leoko.advancedban.TestMethods Class! #6")

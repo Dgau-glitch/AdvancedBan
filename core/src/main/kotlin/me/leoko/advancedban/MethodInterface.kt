@@ -40,9 +40,6 @@ interface MethodInterface {
     /** Context: pure core/no scheduler required. Returns already-loaded layout data. */
     fun getLayouts(): Any
 
-    /** Context: global-only. Lifecycle integration point; Bukkit implementation currently no-ops after telemetry removal. */
-    fun setupMetrics()
-
     /** Context: pure core/no scheduler required. Describes the active platform adapter. */
     fun isBungee(): Boolean
 
