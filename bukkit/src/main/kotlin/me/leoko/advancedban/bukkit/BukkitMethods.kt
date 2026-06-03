@@ -3,10 +3,13 @@ package me.leoko.advancedban.bukkit
 import me.leoko.advancedban.MethodInterface
 import me.leoko.advancedban.Universal
 import me.leoko.advancedban.bukkit.event.PunishmentEvent
+import me.leoko.advancedban.bukkit.integration.OfflinePermissionHook
+import me.leoko.advancedban.bukkit.integration.VaultPermissionHook
 import me.leoko.advancedban.bukkit.event.RevokePunishmentEvent
 import me.leoko.advancedban.bukkit.listener.CommandReceiver
 import me.leoko.advancedban.bukkit.utils.FoliaSchedulers
 import me.leoko.advancedban.bukkit.utils.OnlinePlayerNameCache
+import me.leoko.advancedban.bukkit.utils.TextComponents
 import me.leoko.advancedban.manager.PunishmentManager
 import me.leoko.advancedban.manager.UUIDManager
 import me.leoko.advancedban.utils.Permissionable
@@ -21,9 +24,6 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStreamReader
@@ -32,13 +32,10 @@ import java.net.URI
 import java.nio.charset.StandardCharsets
 import java.util.Collections
 import java.util.UUID
-import java.util.function.BiFunction
 
 class BukkitMethods : MethodInterface {
     private data class CachedOnlinePlayerName(val name: String)
 
-    private val legacySerializer: LegacyComponentSerializer = LegacyComponentSerializer.legacySection()
-    private val plainSerializer: PlainTextComponentSerializer = PlainTextComponentSerializer.plainText()
     private val messageFile = File(dataFolderRef, "Messages.yml")
     private val layoutFile = File(dataFolderRef, "Layouts.yml")
     private val mysqlFile = File(dataFolderRef, "MySQL.yml")
@@ -49,14 +46,7 @@ class BukkitMethods : MethodInterface {
     private lateinit var layouts: YamlConfiguration
     private lateinit var mysql: YamlConfiguration
 
-    private var permissionVault: BiFunction<OfflinePlayer, String, Boolean>? = null
-
-    init {
-        if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
-            val rsp = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission::class.java)
-            if (rsp != null) permissionVault = BiFunction { player, perms -> rsp.provider.playerHas(null, player, perms) }
-        }
-    }
+    private val offlinePermissionHook: OfflinePermissionHook = VaultPermissionHook.create()
 
     override fun loadFiles() {
         if (!configFile.exists()) pluginRef.saveResource("config.yml", true)
@@ -98,7 +88,7 @@ class BukkitMethods : MethodInterface {
     }
 
     override fun isBungee(): Boolean = false
-    override fun clearFormatting(text: String): String = plainSerializer.serialize(legacySerializer.deserialize(text))
+    override fun clearFormatting(text: String): String = TextComponents.stripLegacy(text)
     override fun getPlugin(): JavaPlugin = pluginRef
     override fun getDataFolder(): File = dataFolderRef
 
@@ -116,7 +106,7 @@ class BukkitMethods : MethodInterface {
         }
     }
 
-    private fun deserializeMessage(msg: String): Component = legacySerializer.deserialize(msg)
+    private fun deserializeMessage(msg: String) = TextComponents.legacy(msg)
 
     private fun sendMessageNow(sender: CommandSender, msg: String) {
         sender.sendMessage(deserializeMessage(msg))
@@ -143,9 +133,8 @@ class BukkitMethods : MethodInterface {
 
     override fun getOfflinePermissionPlayer(name: String): Permissionable {
         val player = Bukkit.getOfflinePlayer(name)
-        val vault = permissionVault
-        if (vault == null || !player.hasPlayedBefore()) return Permissionable { false }
-        return Permissionable { permission -> vault.apply(player, permission) }
+        if (!player.hasPlayedBefore()) return Permissionable { false }
+        return Permissionable { permission -> offlinePermissionHook.hasPermission(player, permission) }
     }
 
     override fun isOnline(name: String): Boolean = Bukkit.getOfflinePlayer(name).isOnline
@@ -154,7 +143,7 @@ class BukkitMethods : MethodInterface {
         FoliaSchedulers.runGlobal(pluginRef) {
             getPlayer(player)?.let { target ->
                 FoliaSchedulers.runPlayer(target, pluginRef) {
-                    if (target.isOnline) target.kick(Component.text(reason))
+                    if (target.isOnline) target.kick(TextComponents.legacy(reason))
                 }
             }
         }
@@ -249,7 +238,7 @@ class BukkitMethods : MethodInterface {
 
     override fun log(msg: String) {
         FoliaSchedulers.runGlobal(pluginRef) {
-            Bukkit.getConsoleSender().sendMessage(legacySerializer.deserialize(msg.replace("&", "§")))
+            Bukkit.getConsoleSender().sendMessage(TextComponents.legacy(msg.replace("&", "§")))
         }
     }
     override fun isUnitTesting(): Boolean = false

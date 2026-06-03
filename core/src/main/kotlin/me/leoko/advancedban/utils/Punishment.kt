@@ -136,7 +136,9 @@ class Punishment(
         }
 
         DatabaseManager.get().executeStatement(SQLQuery.DELETE_PUNISHMENT, id)
-        if (removeCache) PunishmentManager.get().getLoadedPunishments(false).remove(this)
+        if (removeCache) {
+            PunishmentManager.get().getLoadedPunishments(false).removeIf { it.id == id || (it.uuid == uuid && it.type == type && it.start == start) }
+        }
 
         if (who != null) {
             val message = MessageManager.getMessage("Un" + type.getBasic().getConfSection("Notification"), true, "OPERATOR", who, "NAME", name)

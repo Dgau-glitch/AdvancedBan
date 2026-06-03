@@ -6,8 +6,7 @@ import me.leoko.advancedban.manager.UUIDManager
 import me.leoko.advancedban.bukkit.BukkitMain
 import me.leoko.advancedban.bukkit.utils.FoliaSchedulers
 import me.leoko.advancedban.bukkit.utils.OnlinePlayerNameCache
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import me.leoko.advancedban.bukkit.utils.TextComponents
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -17,14 +16,13 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 
 class ConnectionListener : Listener {
-    private val legacySerializer: LegacyComponentSerializer = LegacyComponentSerializer.legacySection()
     @EventHandler(priority = EventPriority.HIGH)
     fun onConnect(event: AsyncPlayerPreLoginEvent) {
         if (event.loginResult == AsyncPlayerPreLoginEvent.Result.ALLOWED) {
             UUIDManager.get().supplyInternUUID(event.name, event.uniqueId)
             val result = Universal.get().callConnection(event.name, event.address.hostAddress)
             if (result != null) {
-                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, Component.text(result))
+                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, TextComponents.legacy(result))
             }
         }
     }
@@ -42,7 +40,7 @@ class ConnectionListener : Listener {
         if (!event.player.name.equals("Leoko", ignoreCase = true)) return
         FoliaSchedulers.runAsyncLater(BukkitMain.get(), 20) {
             if (Universal.get().broadcastLeoko()) {
-                val message = legacySerializer.deserialize("§c§lAdvancedBan §8§l» §7My creator §c§oLeoko §7just joined the game ^^")
+                val message = TextComponents.legacy("§c§lAdvancedBan §8§l» §7My creator §c§oLeoko §7just joined the game ^^")
                 FoliaSchedulers.runGlobal(BukkitMain.get()) {
                     // Snapshot only; each player receives the message through its own entity scheduler.
                     Bukkit.getOnlinePlayers().forEach { online ->
@@ -51,7 +49,7 @@ class ConnectionListener : Listener {
                 }
             } else {
                 FoliaSchedulers.runPlayer(event.player, BukkitMain.get()) {
-                    event.player.sendMessage(legacySerializer.deserialize("§c§lAdvancedBan v2 §8§l» §cHey Leoko we are using your Plugin (NO-BC)"))
+                    event.player.sendMessage(TextComponents.legacy("§c§lAdvancedBan v2 §8§l» §cHey Leoko we are using your Plugin (NO-BC)"))
                 }
             }
         }

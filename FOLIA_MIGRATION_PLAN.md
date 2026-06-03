@@ -144,6 +144,8 @@ Acceptance criteria:
 
 ### 9) Core data concurrency pass
 
+**Status:** Completed in the core data concurrency pass.
+
 **Task:** Audit managers for concurrent access caused by Folia region threads.
 
 Acceptance criteria:
@@ -155,6 +157,8 @@ Acceptance criteria:
 
 ### 10) Adventure/message boundary cleanup
 
+**Status:** Completed in the Adventure/message boundary cleanup pass.
+
 **Task:** Finish text handling boundaries.
 
 Acceptance criteria:
@@ -164,6 +168,8 @@ Acceptance criteria:
 - Kicks, messages, console logs, and layouts behave the same as before migration.
 
 ### 11) Optional integrations boundary
+
+**Status:** Completed for the current Vault integration; future optional APIs must follow the adapter boundary.
 
 **Task:** Isolate optional APIs so Folia support does not depend on them.
 

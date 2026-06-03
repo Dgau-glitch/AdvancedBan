@@ -15,6 +15,8 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
 
 class PunishmentTest {
     companion object {
@@ -64,6 +66,33 @@ class PunishmentTest {
         PunishmentManager.get().load("cache", "cache", "127.0.0.1")!!.accept()
         assertTrue(PunishmentManager.get().getLoadedPunishments(false).any { it.uuid == "cache" })
         assertTrue(PunishmentManager.get().isBanned("cache"))
+    }
+
+
+    @Test
+    fun shouldHandleConcurrentPunishmentCreateLoadAndRevokeFlow() {
+        val executor = Executors.newFixedThreadPool(4)
+        try {
+            val tasks = (1..4).map { index ->
+                Callable {
+                    val target = "concurrent$index"
+                    val punishment = Punishment(target, target, "Concurrent test $index", "JUnit5", PunishmentType.BAN, TimeManager.getTime(), -1, "", -1)
+                    punishment.create()
+                    assertTrue(PunishmentManager.get().isBanned(target))
+
+                    val loaded = PunishmentManager.get().load(target, target, "127.0.0.$index")
+                    assertNotNull(loaded)
+                    loaded!!.accept()
+                    assertTrue(PunishmentManager.get().getLoadedPunishments(false).any { it.uuid == target })
+
+                    punishment.delete("JUnit5", false, true)
+                    assertFalse(PunishmentManager.get().getLoadedPunishments(false).any { it.uuid == target })
+                }
+            }
+            executor.invokeAll(tasks).forEach { it.get() }
+        } finally {
+            executor.shutdownNow()
+        }
     }
 
     @Test

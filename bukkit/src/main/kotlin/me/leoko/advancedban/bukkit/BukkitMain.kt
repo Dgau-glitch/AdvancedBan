@@ -7,7 +7,7 @@ import me.leoko.advancedban.bukkit.listener.ConnectionListener
 import me.leoko.advancedban.bukkit.listener.InternalListener
 import me.leoko.advancedban.bukkit.utils.FoliaSchedulers
 import me.leoko.advancedban.bukkit.utils.OnlinePlayerNameCache
-import net.kyori.adventure.text.Component
+import me.leoko.advancedban.bukkit.utils.TextComponents
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -29,7 +29,7 @@ class BukkitMain : JavaPlugin() {
         // Snapshot only; every player mutation below is routed back to the player/entity scheduler.
         onlinePlayers.forEach { player ->
             Universal.get().callConnection(player.name, player.address?.address?.hostAddress ?: "")?.let { reason ->
-                FoliaSchedulers.runPlayer(player, this) { player.kick(Component.text(reason)) }
+                FoliaSchedulers.runPlayer(player, this) { player.kick(TextComponents.legacy(reason)) }
             }
         }
     }

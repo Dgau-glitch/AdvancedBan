@@ -7,13 +7,13 @@ import me.leoko.advancedban.utils.PunishmentType
 import me.leoko.advancedban.utils.SQLQuery
 import java.sql.ResultSet
 import java.sql.SQLException
-import java.util.Collections
 import java.util.Optional
+import java.util.concurrent.ConcurrentHashMap
 
 class PunishmentManager {
-    private val punishments: MutableSet<Punishment> = Collections.synchronizedSet(HashSet())
-    private val history: MutableSet<Punishment> = Collections.synchronizedSet(HashSet())
-    private val cached: MutableSet<String> = Collections.synchronizedSet(HashSet())
+    private val punishments: MutableSet<Punishment> = ConcurrentHashMap.newKeySet()
+    private val history: MutableSet<Punishment> = ConcurrentHashMap.newKeySet()
+    private val cached: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     private fun universal(): Universal = Universal.get()
 
