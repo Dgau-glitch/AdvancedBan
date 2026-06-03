@@ -23,6 +23,12 @@ enum class PunishmentType(
 
     fun getConfSection(path: String): String = "$displayName.$path"
 
+    fun getUndoConfSection(path: String): String = "Un${getBasic().displayName}.$path"
+
+    fun getNotifyPermission(): String = "ab.notify.${displayName.lowercase()}"
+
+    fun getUndoNotifyPermission(): String = "ab.undoNotify.${getBasic().displayName.lowercase()}"
+
     fun getBasic(): PunishmentType = basic ?: this
 
     fun getPermanent(): PunishmentType = if (this == IP_BAN || this == TEMP_IP_BAN) IP_BAN else getBasic()

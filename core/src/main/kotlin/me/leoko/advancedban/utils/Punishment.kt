@@ -108,7 +108,7 @@ class Punishment(
     private fun announce(cWarnings: Int) {
         val notification = MessageManager.getLayout(
             mi.getMessages(),
-            type.name + ".Notification",
+            type.getConfSection("Notification"),
             "OPERATOR", operator,
             "PREFIX", if (mi.getBoolean(mi.getConfig(), "Disable Prefix", false)) "" else MessageManager.getMessage("General.Prefix"),
             "DURATION", getDuration(true),
@@ -119,7 +119,7 @@ class Punishment(
             "DATE", getDate(start),
             "COUNT", cWarnings.toString()
         )
-        mi.notify("ab.notify." + type.name, notification)
+        mi.notify(type.getNotifyPermission(), notification)
     }
 
     fun delete() = delete(null, false, true)
@@ -141,8 +141,8 @@ class Punishment(
         }
 
         if (who != null) {
-            val message = MessageManager.getMessage("Un" + type.getBasic().getConfSection("Notification"), true, "OPERATOR", who, "NAME", name)
-            mi.notify("ab.undoNotify." + type.getBasic().getName(), Collections.singletonList(message))
+            val message = MessageManager.getMessage(type.getUndoConfSection("Notification"), true, "OPERATOR", who, "NAME", name)
+            mi.notify(type.getUndoNotifyPermission(), Collections.singletonList(message))
             Universal.get().debug("$who is deleting a punishment")
         }
 
@@ -154,7 +154,7 @@ class Punishment(
         val isLayout = getReason().startsWith("@") || getReason().startsWith("~")
         return MessageManager.getLayout(
             if (isLayout) mi.getLayouts() else mi.getMessages(),
-            if (isLayout) "Message." + getReason().split(" ")[0].substring(1) else type.name + ".Layout",
+            if (isLayout) "Message." + getReason().split(" ")[0].substring(1) else type.getConfSection("Layout"),
             "OPERATOR", operator,
             "PREFIX", if (mi.getBoolean(mi.getConfig(), "Disable Prefix", false)) "" else MessageManager.getMessage("General.Prefix"),
             "DURATION", getDuration(false),

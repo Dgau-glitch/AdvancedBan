@@ -95,6 +95,30 @@ class PunishmentTest {
         }
     }
 
+
+    @Test
+    fun shouldUseConfiguredDisplayNameMessagePathsForPunishmentCommands() {
+        val messages = requireNotNull(javaClass.classLoader.getResource("Messages.yml")).readText()
+        fun assertSectionExists(section: String) {
+            assertTrue(Regex("(?m)^${Regex.escape(section)}:").containsMatchIn(messages), "Missing Messages.yml section $section")
+        }
+
+        PunishmentType.entries.forEach { type ->
+            assertSectionExists(type.getName())
+            assertEquals("${type.getName()}.Layout", type.getConfSection("Layout"))
+            assertEquals("${type.getName()}.Notification", type.getConfSection("Notification"))
+        }
+
+        listOf(PunishmentType.BAN, PunishmentType.MUTE, PunishmentType.WARNING, PunishmentType.NOTE).forEach { type ->
+            assertSectionExists("Un${type.getName()}")
+            assertEquals("Un${type.getName()}.Done", type.getUndoConfSection("Done"))
+            assertEquals("Un${type.getName()}.NotPunished", type.getUndoConfSection("NotPunished"))
+        }
+
+        assertEquals("UnBan.Done", PunishmentType.IP_BAN.getUndoConfSection("Done"))
+        assertEquals("UnBan.NotPunished", PunishmentType.TEMP_IP_BAN.getUndoConfSection("NotPunished"))
+    }
+
     @Test
     fun shouldBlockBasicCommandsIncludingColons() {
         val universal = Universal.get()

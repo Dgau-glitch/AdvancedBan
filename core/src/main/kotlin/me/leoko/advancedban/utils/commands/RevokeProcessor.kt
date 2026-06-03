@@ -19,12 +19,12 @@ class RevokeProcessor(private val type: PunishmentType) : Consumer<Command.Comma
 
         val punishment = getPunishment(target, type)
         if (punishment == null) {
-            MessageManager.sendMessage(input.getSender(), "Un${type.name}.NotPunished", true, "NAME", name)
+            MessageManager.sendMessage(input.getSender(), type.getUndoConfSection("NotPunished"), true, "NAME", name)
             return
         }
 
         val operator = Universal.get().methods.getName(input.getSender())
         punishment.delete(operator, false, true)
-        MessageManager.sendMessage(input.getSender(), "Un${type.name}.Done", true, "NAME", name)
+        MessageManager.sendMessage(input.getSender(), type.getUndoConfSection("Done"), true, "NAME", name)
     }
 }
