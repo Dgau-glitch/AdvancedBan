@@ -2,10 +2,9 @@ package me.leoko.advancedban.manager
 
 import me.leoko.advancedban.MethodInterface
 import me.leoko.advancedban.Universal
+import me.leoko.advancedban.utils.NetworkUtils
 import java.io.IOException
 import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
 import java.util.Date
 import java.util.Scanner
 import java.util.UUID
@@ -123,7 +122,7 @@ class UUIDManager {
         }
 
         return try {
-            Scanner(URL("https://api.mojang.com/user/profiles/$uuid/names").openStream(), "UTF-8").use { scanner ->
+            Scanner(NetworkUtils.openHttpConnection("https://api.mojang.com/user/profiles/$uuid/names").inputStream, "UTF-8").use { scanner ->
                 var s = scanner.useDelimiter("\\A").next()
                 s = s.substring(s.lastIndexOf('{'), s.lastIndexOf('}') + 1)
                 mi.parseJSON(s, "name")
@@ -137,9 +136,7 @@ class UUIDManager {
     private fun askAPI(url: String, nameInput: String, key: String): String? {
         val mi = mi()
         val name = nameInput.lowercase()
-        val request = URL(url.replace("%NAME%", name).replace("%TIMESTAMP%", Date().time.toString())).openConnection() as HttpURLConnection
-        request.connect()
-
+        val request = NetworkUtils.openHttpConnection(url.replace("%NAME%", name).replace("%TIMESTAMP%", Date().time.toString()))
         val uuid = mi.parseJSON(InputStreamReader(request.inputStream), key)
 
         if (uuid == null) {

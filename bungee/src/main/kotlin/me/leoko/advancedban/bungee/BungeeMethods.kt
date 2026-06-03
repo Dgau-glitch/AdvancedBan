@@ -12,6 +12,7 @@ import me.leoko.advancedban.bungee.listener.CommandReceiverBungee
 import me.leoko.advancedban.bungee.utils.CloudNetCloudPermsOfflineUser
 import me.leoko.advancedban.bungee.utils.LuckPermsOfflineUser
 import me.leoko.advancedban.manager.PunishmentManager
+import me.leoko.advancedban.utils.NetworkUtils
 import me.leoko.advancedban.manager.UUIDManager
 import me.leoko.advancedban.utils.Permissionable
 import me.leoko.advancedban.utils.Punishment
@@ -27,8 +28,6 @@ import net.md_5.bungee.config.ConfigurationProvider
 import net.md_5.bungee.config.YamlConfiguration
 import java.io.File
 import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
 import java.nio.file.Files
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -75,8 +74,7 @@ class BungeeMethods : MethodInterface {
     }
 
     override fun getFromUrlJson(url: String, key: String): String? = try {
-        val request = URL(url).openConnection() as HttpURLConnection
-        request.connect()
+        val request = NetworkUtils.openHttpConnection(url)
         var json = JsonParser().parse(InputStreamReader(request.inputStream)).asJsonObject
         val keys = key.split("\\|")
         for (i in 0 until keys.size - 1) {

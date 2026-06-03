@@ -8,13 +8,13 @@ import me.leoko.advancedban.manager.UUIDManager
 import me.leoko.advancedban.manager.UpdateManager
 import me.leoko.advancedban.utils.Command
 import me.leoko.advancedban.utils.InterimData
+import me.leoko.advancedban.utils.NetworkUtils
 import me.leoko.advancedban.utils.Punishment
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
 import java.io.StringWriter
-import java.net.URL
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -109,14 +109,16 @@ class Universal {
     fun getFromURL(surl: String): String? {
         var response: String? = null
         try {
-            val url = URL(surl)
-            Scanner(url.openStream()).use { s ->
+            val connection = NetworkUtils.openHttpConnection(surl)
+            Scanner(connection.inputStream).use { s ->
                 if (s.hasNext()) {
                     response = s.next()
                 }
             }
         } catch (_: IOException) {
-            debug("!! Failed to connect to URL: $surl")
+            debug("!! Failed to connect to URL within timeout: $surl")
+        } catch (_: IllegalArgumentException) {
+            debug("!! Invalid URL: $surl")
         }
         return response
     }

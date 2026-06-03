@@ -12,6 +12,7 @@ import me.leoko.advancedban.bukkit.utils.OnlinePlayerNameCache
 import me.leoko.advancedban.bukkit.utils.TextComponents
 import me.leoko.advancedban.manager.PunishmentManager
 import me.leoko.advancedban.manager.UUIDManager
+import me.leoko.advancedban.utils.NetworkUtils
 import me.leoko.advancedban.utils.Permissionable
 import me.leoko.advancedban.utils.Punishment
 import me.leoko.advancedban.utils.tabcompletion.TabCompleter
@@ -27,8 +28,6 @@ import org.json.simple.parser.JSONParser
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URI
 import java.nio.charset.StandardCharsets
 import java.util.Collections
 import java.util.UUID
@@ -64,8 +63,7 @@ class BukkitMethods : MethodInterface {
     }
 
     override fun getFromUrlJson(url: String, key: String): String? = try {
-        val request = URI.create(url).toURL().openConnection() as HttpURLConnection
-        request.connect()
+        val request = NetworkUtils.openHttpConnection(url)
         val jp = JSONParser()
         var json = jp.parse(InputStreamReader(request.inputStream)) as JSONObject
         val keys = key.split("\\|")
