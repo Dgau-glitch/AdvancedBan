@@ -6,7 +6,6 @@ import me.leoko.advancedban.bukkit.event.PunishmentEvent
 import me.leoko.advancedban.bukkit.event.RevokePunishmentEvent
 import me.leoko.advancedban.bukkit.listener.CommandReceiver
 import me.leoko.advancedban.bukkit.utils.FoliaSchedulers
-import me.leoko.advancedban.manager.DatabaseManager
 import me.leoko.advancedban.manager.PunishmentManager
 import me.leoko.advancedban.manager.UUIDManager
 import me.leoko.advancedban.utils.Permissionable
@@ -133,7 +132,7 @@ class BukkitMethods : MethodInterface {
     override fun kickPlayer(player: String, reason: String) { getPlayer(player)?.takeIf { it.isOnline }?.kick(Component.text(reason)) }
     override fun getOnlinePlayers(): Array<Player> = Bukkit.getOnlinePlayers().toTypedArray()
     override fun scheduleAsyncRep(rn: Runnable, l1: Long, l2: Long) {
-        Bukkit.getAsyncScheduler().runAtFixedRate(pluginRef, { rn.run() }, l1 * 50, l2 * 50, java.util.concurrent.TimeUnit.MILLISECONDS)
+        FoliaSchedulers.runAsyncRepeating(pluginRef, l1, l2) { rn.run() }
     }
     override fun scheduleAsync(rn: Runnable, l1: Long) {
         FoliaSchedulers.runAsyncLater(pluginRef, l1) { rn.run() }

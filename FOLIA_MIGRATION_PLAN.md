@@ -24,7 +24,7 @@ Reference points used for this plan:
 
 - Bukkit already declares the Folia API as `compileOnly("dev.folia:folia-api:1.21.11-R0.1-SNAPSHOT")`.
 - `plugin.yml` already declares `api-version: 1.21` and `folia-supported: true`.
-- `FoliaSchedulers` exists, but it currently wraps only async, delayed async, global, and player/entity execution.
+- `FoliaSchedulers` now provides a reusable facade for async, global, player/entity, and region/location scheduling paths.
 - `BukkitMethods` still exposes platform operations through a broad `MethodInterface`, so every call path must be classified as async/global/player/region before the migration can be called complete.
 - Bungee code is outside the Folia runtime scope and should remain separate from Bukkit/Folia-specific abstractions.
 
@@ -33,6 +33,8 @@ Reference points used for this plan:
 Each item below is intentionally scoped so it can be implemented in one follow-up message/task without rewriting the whole plugin at once.
 
 ### 1) Build and packaging baseline
+
+**Status:** Completed in the build baseline pass.
 
 **Task:** Verify and clean Bukkit Gradle packaging for a Folia deployable jar.
 
@@ -44,6 +46,8 @@ Acceptance criteria:
 - `gradle :bukkit:shadowJar --no-daemon` succeeds.
 
 ### 2) Scheduler abstraction hardening
+
+**Status:** Completed in the scheduler facade hardening pass.
 
 **Task:** Expand `FoliaSchedulers` into a complete internal scheduling facade.
 
