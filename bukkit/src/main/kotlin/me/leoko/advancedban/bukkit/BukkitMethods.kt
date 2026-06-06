@@ -22,6 +22,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.PluginCommand
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
+import org.bukkit.plugin.IllegalPluginAccessException
 import org.bukkit.plugin.java.JavaPlugin
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
@@ -238,9 +239,24 @@ class BukkitMethods : MethodInterface {
     }
 
     override fun log(msg: String) {
-        FoliaSchedulers.runGlobal(pluginRef) {
-            Bukkit.getConsoleSender().sendMessage(TextComponents.legacy(msg.replace("&", "§")))
+        val formatted = msg.replace("&", "§")
+        val plugin = pluginRef
+        if (!plugin.isEnabled) {
+            logDirectly(formatted)
+            return
         }
+
+        try {
+            FoliaSchedulers.runGlobal(plugin) {
+                Bukkit.getConsoleSender().sendMessage(TextComponents.legacy(formatted))
+            }
+        } catch (_: IllegalPluginAccessException) {
+            logDirectly(formatted)
+        }
+    }
+
+    private fun logDirectly(formatted: String) {
+        pluginRef.logger.info(TextComponents.stripLegacy(formatted))
     }
     override fun isUnitTesting(): Boolean = false
 
