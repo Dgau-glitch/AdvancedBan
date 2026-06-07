@@ -15,8 +15,10 @@ import me.leoko.advancedban.utils.commands.RevokeProcessor
 import me.leoko.advancedban.utils.commandspec.*
 import me.leoko.advancedban.utils.tabcompletion.BasicTabCompleter
 import me.leoko.advancedban.utils.tabcompletion.CleanTabCompleter
+import me.leoko.advancedban.utils.tabcompletion.PunishedTargetTabCompleter
 import me.leoko.advancedban.utils.tabcompletion.PunishmentTabCompleter
 import me.leoko.advancedban.utils.tabcompletion.TabCompleter
+import me.leoko.advancedban.utils.tabcompletion.UnwarnTabCompleter
 import java.util.Calendar
 import java.util.GregorianCalendar
 import java.util.function.Consumer
@@ -41,9 +43,9 @@ enum class Command(
     NOTE(PunishmentType.NOTE.perms, ".+", PunishmentTabCompleter(false), PunishmentCommandHandlers.processor(PunishmentType.NOTE), PunishmentType.NOTE.getConfSection("Usage"), "note"),
     KICK(PunishmentType.KICK.perms, ".+", PunishmentTabCompleter(false), PunishmentCommandHandlers.kickHandler, PunishmentType.KICK.getConfSection("Usage"), "kick"),
 
-    UN_BAN("ab.${PunishmentType.BAN.getName()}.undo", "\\S+", BasicTabCompleter("[Name/IP]"), RevokeProcessor(PunishmentType.BAN), "Un" + PunishmentType.BAN.getConfSection("Usage"), "unban"),
-    UN_MUTE("ab.${PunishmentType.MUTE.getName()}.undo", "\\S+", BasicTabCompleter(CleanTabCompleter.PLAYER_PLACEHOLDER, "[Name]"), RevokeProcessor(PunishmentType.MUTE), "Un" + PunishmentType.MUTE.getConfSection("Usage"), "unmute"),
-    UN_WARN("ab.${PunishmentType.WARNING.getName()}.undo", "[0-9]+|(?i:clear \\S+)", RevokeListTabCompleters.unWarnUnNote, RevokeCommandHandlers.unWarnClearOrId, "Un" + PunishmentType.WARNING.getConfSection("Usage"), "unwarn"),
+    UN_BAN("ab.${PunishmentType.BAN.getName()}.undo", "\\S+", PunishedTargetTabCompleter(PunishmentType.BAN, "[Name/IP]"), RevokeProcessor(PunishmentType.BAN), "Un" + PunishmentType.BAN.getConfSection("Usage"), "unban"),
+    UN_MUTE("ab.${PunishmentType.MUTE.getName()}.undo", "\\S+", PunishedTargetTabCompleter(PunishmentType.MUTE, "[Name]"), RevokeProcessor(PunishmentType.MUTE), "Un" + PunishmentType.MUTE.getConfSection("Usage"), "unmute"),
+    UN_WARN("ab.${PunishmentType.WARNING.getName()}.undo", "[0-9]+|\\S+|(?i:clear \\S+)", UnwarnTabCompleter, RevokeCommandHandlers.unWarnClearOrId, "Un" + PunishmentType.WARNING.getConfSection("Usage"), "unwarn"),
     UN_NOTE("ab.${PunishmentType.NOTE.getName()}.undo", "[0-9]+|(?i:clear \\S+)", RevokeListTabCompleters.unWarnUnNote, RevokeCommandHandlers.unNoteClearOrId, "Un" + PunishmentType.NOTE.getConfSection("Usage"), "unnote"),
     UN_PUNISH("ab.all.undo", "[0-9]+", BasicTabCompleter("<ID>"), RevokeByIdProcessor("UnPunish", PunishmentManager.get()::getPunishment), "UnPunish.Usage", "unpunish"),
     CHANGE_REASON("ab.changeReason", "([0-9]+|(?i)(ban|mute) \\S+) .+", RevokeListTabCompleters.changeReason, RevokeListHandlers.changeReasonHandler, "ChangeReason.Usage", "change-reason"),

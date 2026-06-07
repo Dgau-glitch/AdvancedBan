@@ -14,11 +14,15 @@ class PunishmentManager {
     private val punishments: MutableSet<Punishment> = ConcurrentHashMap.newKeySet()
     private val history: MutableSet<Punishment> = ConcurrentHashMap.newKeySet()
     private val cached: MutableSet<String> = ConcurrentHashMap.newKeySet()
+    private val knownTargetNames: MutableSet<String> = ConcurrentHashMap.newKeySet()
+    private val currentTargetNamesByType: MutableMap<PunishmentType, MutableSet<String>> = ConcurrentHashMap()
+    private val currentIdsByType: MutableMap<PunishmentType, MutableSet<Int>> = ConcurrentHashMap()
 
     private fun universal(): Universal = Universal.get()
 
     fun setup() {
         DatabaseManager.get().executeStatement(SQLQuery.DELETE_OLD_PUNISHMENTS, TimeManager.getTime())
+        refreshSuggestionIndexes()
     }
 
     fun load(name: String, uuid: String, ip: String?): InterimData? {
@@ -39,6 +43,11 @@ class PunishmentManager {
             return null
         }
         return InterimData(uuid, name, ip ?: "", punishments, history)
+    }
+
+    fun indexLoadedData(punishments: Iterable<Punishment>, history: Iterable<Punishment>) {
+        punishments.forEach(::indexCurrentPunishment)
+        history.forEach(::indexKnownTarget)
     }
 
     fun discard(nameInput: String) {
@@ -165,6 +174,8 @@ class PunishmentManager {
         cached.add(data.name)
         cached.add(data.ip)
         cached.add(data.uuid)
+        knownTargetNames.add(data.name)
+        indexLoadedData(data.punishments, data.history)
     }
 
     fun getCalculationLevel(uuid: String, layout: String): Int {
@@ -189,6 +200,41 @@ class PunishmentManager {
     fun getCurrentWarns(uuid: String): Int = getWarns(uuid).size
 
     fun getCurrentNotes(uuid: String): Int = getNotes(uuid).size
+
+    fun getKnownTargetNames(): List<String> = knownTargetNames.sortedWith(String.CASE_INSENSITIVE_ORDER)
+
+    fun getCurrentPunishmentTargetNames(type: PunishmentType): List<String> =
+        currentTargetNamesByType[type.getBasic()].orEmpty().sortedWith(String.CASE_INSENSITIVE_ORDER)
+
+    fun getCurrentPunishmentIds(type: PunishmentType): List<String> =
+        currentIdsByType[type.getBasic()].orEmpty().sorted().map(Int::toString)
+
+    fun indexCurrentPunishment(punishment: Punishment) {
+        indexKnownTarget(punishment)
+        if (punishment.type != PunishmentType.KICK && !punishment.isExpired()) {
+            val basicType = punishment.type.getBasic()
+            currentTargetNamesByType.computeIfAbsent(basicType) { ConcurrentHashMap.newKeySet() }.add(punishment.name)
+            if (punishment.id != -1) currentIdsByType.computeIfAbsent(basicType) { ConcurrentHashMap.newKeySet() }.add(punishment.id)
+        }
+    }
+
+    fun unindexCurrentPunishment(punishment: Punishment) {
+        val basicType = punishment.type.getBasic()
+        currentTargetNamesByType[basicType]?.removeIf { it.equals(punishment.name, ignoreCase = true) }
+        currentIdsByType[basicType]?.remove(punishment.id)
+    }
+
+    private fun indexKnownTarget(punishment: Punishment) {
+        if (punishment.name.isNotBlank()) knownTargetNames.add(punishment.name)
+    }
+
+    private fun refreshSuggestionIndexes() {
+        knownTargetNames.clear()
+        currentTargetNamesByType.clear()
+        currentIdsByType.clear()
+        getPunishments(SQLQuery.SELECT_ALL_PUNISHMENTS).forEach(::indexCurrentPunishment)
+        getPunishments(SQLQuery.SELECT_ALL_PUNISHMENTS_HISTORY_LIMIT, 250).forEach(::indexKnownTarget)
+    }
 
     fun getLoadedPunishments(checkExpired: Boolean): MutableSet<Punishment> {
         if (checkExpired) {

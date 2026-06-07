@@ -17,9 +17,7 @@ class PunishmentTabCompleter(private val temporary: Boolean) : TabCompleter {
 
         if (actualArgs.size == 1) {
             if (!hiddenTag) suggestions.add("-s")
-            for (player in methodInterface.getOnlinePlayers()) {
-                suggestions.add(methodInterface.getName(player))
-            }
+            suggestions.addAll(TargetTabSuggestions.knownPlayers(actualArgs))
             suggestions.add("[Name]")
         } else if (temporary && actualArgs.size == 2) {
             val current = actualArgs[actualArgs.size - 1]
@@ -42,7 +40,7 @@ class PunishmentTabCompleter(private val temporary: Boolean) : TabCompleter {
         }
 
         if (actualArgs.isNotEmpty()) {
-            suggestions.removeIf { s -> !s.startsWith(actualArgs[actualArgs.size - 1]) }
+            suggestions.removeIf { s -> !s.startsWith(actualArgs[actualArgs.size - 1], ignoreCase = true) }
         }
         return suggestions
     }

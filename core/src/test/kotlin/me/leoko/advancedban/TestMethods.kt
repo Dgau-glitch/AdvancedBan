@@ -55,7 +55,7 @@ class TestMethods(private val dataFolder: File) : MethodInterface {
     override fun getString(file: Any, path: String, def: String): String = def
     override fun getLong(file: Any, path: String, def: Long): Long = def
     override fun getInteger(file: Any, path: String, def: Int): Int = def
-    override fun contains(file: Any, path: String): Boolean = true
+    override fun contains(file: Any, path: String): Boolean = !path.startsWith("WarnActions.")
     override fun getFileName(file: Any): String = fail("This method has not been setup for tests yet. Edit the me.leoko.advancedban.TestMethods Class! #35")
     override fun callPunishmentEvent(punishment: Punishment) = println("Called punishment event!")
     override fun callRevokePunishmentEvent(punishment: Punishment, massClear: Boolean) = println("Called punishment-revoke event!")

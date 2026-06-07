@@ -68,6 +68,8 @@ class Punishment(
             }
         }
 
+        PunishmentManager.get().indexCurrentPunishment(this)
+
         if (!silent) announce(cWarnings)
 
         if (mi.isOnline(name)) {
@@ -139,6 +141,7 @@ class Punishment(
         if (removeCache) {
             PunishmentManager.get().getLoadedPunishments(false).removeIf { it.id == id || (it.uuid == uuid && it.type == type && it.start == start) }
         }
+        PunishmentManager.get().unindexCurrentPunishment(this)
 
         if (who != null) {
             val message = MessageManager.getMessage(type.getUndoConfSection("Notification"), true, "OPERATOR", who, "NAME", name)

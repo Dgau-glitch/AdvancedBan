@@ -9,13 +9,11 @@ open class CleanTabCompleter(private val rawTabCompleter: MutableTabCompleter) :
 
         if (suggestions.isNotEmpty() && suggestions[0] == PLAYER_PLACEHOLDER) {
             suggestions.removeAt(0)
-            for (player in Universal.get().methods.getOnlinePlayers()) {
-                suggestions.add(Universal.get().methods.getName(player))
-            }
+            suggestions.addAll(TargetTabSuggestions.knownPlayers(args))
         }
 
         if (args.isNotEmpty()) {
-            suggestions.removeIf { s -> !s.startsWith(args[args.size - 1]) }
+            suggestions.removeIf { s -> !s.startsWith(args[args.size - 1], ignoreCase = true) }
         }
         return suggestions
     }

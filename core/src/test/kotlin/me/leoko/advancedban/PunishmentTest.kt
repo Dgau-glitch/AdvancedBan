@@ -4,6 +4,7 @@ import me.leoko.advancedban.manager.CommandManager
 import me.leoko.advancedban.manager.DatabaseManager
 import me.leoko.advancedban.manager.PunishmentManager
 import me.leoko.advancedban.manager.TimeManager
+import me.leoko.advancedban.utils.Command
 import me.leoko.advancedban.utils.Punishment
 import me.leoko.advancedban.utils.PunishmentType
 import org.junit.jupiter.api.AfterAll
@@ -95,6 +96,24 @@ class PunishmentTest {
         }
     }
 
+
+    @Test
+    fun shouldSuggestKnownAndCurrentlyPunishedTargetsForTabs() {
+        val ban = Punishment("TabBanTarget", "tab-ban-target", "Tab test", "JUnit5", PunishmentType.BAN, TimeManager.getTime(), -1, "", -1)
+        ban.create(true)
+        val mute = Punishment("TabMuteTarget", "tab-mute-target", "Tab test", "JUnit5", PunishmentType.MUTE, TimeManager.getTime(), -1, "", -1)
+        mute.create(true)
+        val warn = Punishment("TabWarnTarget", "tab-warn-target", "Tab test", "JUnit5", PunishmentType.WARNING, TimeManager.getTime(), -1, "", -1)
+        warn.create(true)
+
+        assertTrue(Command.BAN.tabCompleter!!.onTabComplete("JUnit5", arrayOf("tabb")).contains("TabBanTarget"))
+        assertTrue(Command.UN_BAN.tabCompleter!!.onTabComplete("JUnit5", arrayOf("tabb")).contains("TabBanTarget"))
+        assertTrue(Command.UN_MUTE.tabCompleter!!.onTabComplete("JUnit5", arrayOf("tabm")).contains("TabMuteTarget"))
+
+        val warnSuggestions = Command.UN_WARN.tabCompleter!!.onTabComplete("JUnit5", arrayOf("tabw"))
+        assertTrue(warnSuggestions.contains("TabWarnTarget"))
+        assertTrue(Command.UN_WARN.tabCompleter!!.onTabComplete("JUnit5", arrayOf(warn.id.toString())).contains(warn.id.toString()))
+    }
 
     @Test
     fun shouldUseConfiguredDisplayNameMessagePathsForPunishmentCommands() {

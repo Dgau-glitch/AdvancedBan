@@ -16,8 +16,9 @@ import java.util.function.Consumer
 object RevokeCommandHandlers {
     val unWarnClearOrId: Consumer<Command.CommandInput> = Consumer { input ->
         val confSection = PunishmentType.WARNING.getName()
-        if ((input.getPrimary() ?: "").lowercase() == "clear") {
-            input.next()
+        val primary = input.getPrimary()
+        if (primary.lowercase() == "clear" || !primary.matches("[0-9]+".toRegex())) {
+            if (primary.equals("clear", ignoreCase = true)) input.next()
             val name = input.getPrimary()
             val uuid = processName(input) ?: return@Consumer
 
