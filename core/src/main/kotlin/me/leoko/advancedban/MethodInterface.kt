@@ -91,6 +91,9 @@ interface MethodInterface {
     /** Context: global-only. Returns a snapshot for lookup/iteration only; callers must schedule each player mutation on the player scheduler. */
     fun getOnlinePlayers(): Array<out Any>
 
+    /** Context: pure core/no scheduler required. Returns a prebuilt snapshot of online/offline player names for fast tab completion. */
+    fun getKnownPlayerNames(): List<String> = getOnlinePlayers().map(::getName)
+
     /** Context: blocking/async-safe. Schedules repeating async work through the platform scheduler facade. */
     fun scheduleAsyncRep(rn: Runnable, l1: Long, l2: Long)
 

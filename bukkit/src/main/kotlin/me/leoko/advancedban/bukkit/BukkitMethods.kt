@@ -143,7 +143,8 @@ class BukkitMethods : MethodInterface {
             }
         }
     }
-    override fun getOnlinePlayers(): Array<Any> = OnlinePlayerNameCache.snapshot().map(::CachedOnlinePlayerName).toTypedArray()
+    override fun getOnlinePlayers(): Array<Any> = OnlinePlayerNameCache.onlineSnapshot().map(::CachedOnlinePlayerName).toTypedArray()
+    override fun getKnownPlayerNames(): List<String> = OnlinePlayerNameCache.knownSnapshot()
     override fun scheduleAsyncRep(rn: Runnable, l1: Long, l2: Long) {
         FoliaSchedulers.runAsyncRepeating(pluginRef, l1, l2) { rn.run() }
     }
