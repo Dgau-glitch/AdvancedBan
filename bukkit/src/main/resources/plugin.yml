@@ -1,56 +1,208 @@
 name: AdvancedBan
-version: ${project.version}
-main: ${project.groupId}.bukkit.BukkitMain
+version: ${version}
+main: me.leoko.advancedban.bukkit.BukkitMain
 author: Leoko
 softdepend: [Vault]
-api-version: 1.13
+api-version: 1.21
+folia-supported: true
 
 commands:
   AdvancedBan:
     description: Information about the Plugin
+    aliases: [ab]
+    permission: ab.advancedban
   ban:
     description: Ban a user permanently
+    aliases: [pban]
+    permission: ab.ban.perma
   tempban:
     description: Ban a user temporarily
+    aliases: [tban]
+    permission: ab.ban.temp
   ipban:
     description: Ban a user by IP
     aliases: [banip, ban-ip]
+    permission: ab.ipban.perma
   tempipban:
     description: Ban a user temporarily by IP
-    aliases: [tipban]
+    aliases: [tipban, tempbanip, temp-ipban, temp-ip-ban]
+    permission: ab.ipban.temp
   kick:
     description: Kick a user
+    aliases: [k]
+    permission: ab.kick.use
   warn:
     description: Warn a user permanently
+    aliases: [warning]
+    permission: ab.warn.perma
   note:
     description: Adds a note to a users file
+    permission: ab.note.use
   tempwarn:
     description: Warn a user temporarily
+    aliases: [twarn]
+    permission: ab.warn.temp
   mute:
     description: Mute a user permanently
+    aliases: [pmute]
+    permission: ab.mute.perma
   tempmute:
     description: Mute a user temporarily
+    aliases: [tmute]
+    permission: ab.mute.temp
   banlist:
     description: See all punishments
+    aliases: [blist]
+    permission: ab.banlist
   history:
     description: See a user''s history
+    aliases: [hist]
+    permission: ab.history
   warns:
     description: See your or a user''s warns
+    aliases: [warnings]
+    permission: ab.warns
   notes:
     description: See your or a user''s notes
+    permission: ab.notes
   check:
     description: Get all information about a user
+    aliases: [lookup]
+    permission: ab.check
   systemPrefs:
     description: Displays System-Preferences for setting up the plugin
+    aliases: [systemprefs, systemperfs, sysperfs]
+    permission: ab.systemprefs
   unwarn:
     description: Deletes a warn
+    aliases: [delwarn]
+    permission: ab.Warn.undo
   unnote:
     description: Deletes a note
+    aliases: [delnote]
+    permission: ab.Note.undo
   unpunish:
     description: Deletes a punishment by ID
+    aliases: [delpunish]
+    permission: ab.all.undo
   unban:
     description: Unban a user
+    aliases: [pardon]
+    permission: ab.Ban.undo
   unmute:
     description: Unmute a user
+    permission: ab.Mute.undo
   change-reason:
     description: Change the reason of an existing punishment
+    aliases: [changereason, creason]
+    permission: ab.changeReason
+
+permissions:
+  ab.all:
+    description: Grants every AdvancedBan Bukkit command permission
+    default: op
+    children:
+      ab.advancedban: true
+      ab.help: true
+      ab.reload: true
+      ab.ban.perma: true
+      ab.ban.temp: true
+      ab.ipban.perma: true
+      ab.ipban.temp: true
+      ab.kick.use: true
+      ab.warn.perma: true
+      ab.warn.temp: true
+      ab.note.use: true
+      ab.mute.perma: true
+      ab.mute.temp: true
+      ab.banlist: true
+      ab.history: true
+      ab.warns: true
+      ab.notes: true
+      ab.check: true
+      ab.systemprefs: true
+      ab.Ban.undo: true
+      ab.Mute.undo: true
+      ab.Warn.undo: true
+      ab.Note.undo: true
+      ab.all.undo: true
+      ab.changeReason: true
+  ab.advancedban:
+    description: Allows opening the AdvancedBan root command
+    default: op
+  ab.help:
+    description: Allows viewing AdvancedBan command help
+    default: op
+    children:
+      ab.advancedban: true
+  ab.reload:
+    description: Allows reloading AdvancedBan configuration
+    default: op
+    children:
+      ab.advancedban: true
+  ab.ban.perma:
+    description: Allows permanent bans
+    default: op
+  ab.ban.temp:
+    description: Allows temporary bans
+    default: op
+  ab.ipban.perma:
+    description: Allows permanent IP bans
+    default: op
+  ab.ipban.temp:
+    description: Allows temporary IP bans
+    default: op
+  ab.kick.use:
+    description: Allows kicking players
+    default: op
+  ab.warn.perma:
+    description: Allows permanent warnings
+    default: op
+  ab.warn.temp:
+    description: Allows temporary warnings
+    default: op
+  ab.note.use:
+    description: Allows adding notes
+    default: op
+  ab.mute.perma:
+    description: Allows permanent mutes
+    default: op
+  ab.mute.temp:
+    description: Allows temporary mutes
+    default: op
+  ab.banlist:
+    description: Allows viewing active punishments
+    default: op
+  ab.history:
+    description: Allows viewing punishment history
+    default: op
+  ab.warns:
+    description: Allows viewing warnings
+    default: op
+  ab.notes:
+    description: Allows viewing notes
+    default: op
+  ab.check:
+    description: Allows checking a user
+    default: op
+  ab.systemprefs:
+    description: Allows viewing AdvancedBan system preferences
+    default: op
+  ab.Ban.undo:
+    description: Allows unbanning users
+    default: op
+  ab.Mute.undo:
+    description: Allows unmuting users
+    default: op
+  ab.Warn.undo:
+    description: Allows deleting warnings
+    default: op
+  ab.Note.undo:
+    description: Allows deleting notes
+    default: op
+  ab.all.undo:
+    description: Allows deleting punishments by ID
+    default: op
+  ab.changeReason:
+    description: Allows changing existing punishment reasons
+    default: op
