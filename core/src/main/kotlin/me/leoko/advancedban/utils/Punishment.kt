@@ -49,11 +49,19 @@ class Punishment(
 
         val cWarnings = if (type.getBasic() == PunishmentType.WARNING) PunishmentManager.get().getCurrentWarns(uuid) + 1 else 0
 
-        DatabaseManager.get().executeStatement(SQLQuery.INSERT_PUNISHMENT_HISTORY, name, uuid, getReason(), operator, type.name, start, end, calculation)
+        if (!DatabaseManager.get().executeStatementSucceeded(SQLQuery.INSERT_PUNISHMENT_HISTORY, name, uuid, getReason(), operator, type.name, start, end, calculation)) {
+            Universal.get().log("!! Failed! AB has not saved the ${type.name} history entry because the database rejected it")
+            Universal.get().log("!! Failed at: $this")
+            return
+        }
 
         if (type != PunishmentType.KICK) {
             try {
-                DatabaseManager.get().executeStatement(SQLQuery.INSERT_PUNISHMENT, name, uuid, getReason(), operator, type.name, start, end, calculation)
+                if (!DatabaseManager.get().executeStatementSucceeded(SQLQuery.INSERT_PUNISHMENT, name, uuid, getReason(), operator, type.name, start, end, calculation)) {
+                    Universal.get().log("!! Failed! AB has not saved the ${type.name} because the database rejected it")
+                    Universal.get().log("!! Failed at: $this")
+                    return
+                }
                 DatabaseManager.get().executeResultStatement(SQLQuery.SELECT_EXACT_PUNISHMENT, uuid, start, type.name).use { rs ->
                     if (rs == null) return@use
                     if (rs.next()) {

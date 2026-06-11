@@ -31,6 +31,7 @@ class DatabaseManager {
 
         executeStatement(SQLQuery.CREATE_TABLE_PUNISHMENT)
         executeStatement(SQLQuery.CREATE_TABLE_PUNISHMENT_HISTORY)
+        migrateReasonColumns()
     }
 
     fun shutdown() {
@@ -60,16 +61,18 @@ class DatabaseManager {
         executeStatement(sql, false, *parameters)
     }
 
+    fun executeStatementSucceeded(sql: SQLQuery, vararg parameters: Any?): Boolean =
+        executeStatementInternal(sql.toString(), false, reportErrors = true, *parameters).success
+
     fun executeResultStatement(sql: SQLQuery, vararg parameters: Any?): ResultSet? {
         return executeStatement(sql, true, *parameters)
     }
 
-    private fun executeStatement(sql: SQLQuery, result: Boolean, vararg parameters: Any?): ResultSet? {
-        return executeStatement(sql.toString(), result, *parameters)
-    }
+    private fun executeStatement(sql: SQLQuery, result: Boolean, vararg parameters: Any?): ResultSet? =
+        executeStatementInternal(sql.toString(), result, reportErrors = true, *parameters).resultSet
 
     @Synchronized
-    private fun executeStatement(sql: String, result: Boolean, vararg parameters: Any?): ResultSet? {
+    private fun executeStatementInternal(sql: String, result: Boolean, reportErrors: Boolean, vararg parameters: Any?): StatementResult {
         try {
             dataSource!!.connection.use { connection: Connection ->
                 connection.prepareStatement(sql).use { statement: PreparedStatement ->
@@ -79,30 +82,42 @@ class DatabaseManager {
                     if (result) {
                         val results = createCachedRowSet()
                         results.populate(statement.executeQuery())
-                        return results
+                        return StatementResult(results, true)
                     }
                     statement.execute()
+                    return StatementResult(null, true)
                 }
             }
         } catch (ex: SQLException) {
-            Universal.get().log(
-                "An unexpected error has occurred executing an Statement in the database\n" +
-                    "Please check the plugins/AdvancedBan/logs/latest.log file and report this error in: https://github.com/DevLeoko/AdvancedBan/issues"
-            )
-            Universal.get().debug("Query: \n$sql")
-            Universal.get().debugSqlException(ex)
+            if (reportErrors) {
+                Universal.get().log(
+                    "An unexpected error has occurred executing an Statement in the database\n" +
+                        "Please check the plugins/AdvancedBan/logs/latest.log file and report this error in: https://github.com/DevLeoko/AdvancedBan/issues"
+                )
+                Universal.get().debug("Query: \n$sql")
+                Universal.get().debugSqlException(ex)
+            }
         } catch (ex: NullPointerException) {
-            Universal.get().log(
-                "An unexpected error has occurred connecting to the database\n" +
-                    "Check if your MySQL data is correct and if your MySQL-Server is online\n" +
-                    "Please check the plugins/AdvancedBan/logs/latest.log file and report this error in: https://github.com/DevLeoko/AdvancedBan/issues"
-            )
-            Universal.get().debugException(ex)
+            if (reportErrors) {
+                Universal.get().log(
+                    "An unexpected error has occurred connecting to the database\n" +
+                        "Check if your MySQL data is correct and if your MySQL-Server is online\n" +
+                        "Please check the plugins/AdvancedBan/logs/latest.log file and report this error in: https://github.com/DevLeoko/AdvancedBan/issues"
+                )
+                Universal.get().debugException(ex)
+            }
         }
-        return null
+        return StatementResult(null, false)
+    }
+
+    private fun migrateReasonColumns() {
+        executeStatementInternal(SQLQuery.ALTER_PUNISHMENT_REASON_COLUMN.toString(), false, reportErrors = false)
+        executeStatementInternal(SQLQuery.ALTER_PUNISHMENT_HISTORY_REASON_COLUMN.toString(), false, reportErrors = false)
     }
 
     fun isConnectionValid(): Boolean = dataSource?.isRunning == true
+
+    private data class StatementResult(val resultSet: ResultSet?, val success: Boolean)
 
     companion object {
         @Volatile
