@@ -29,8 +29,12 @@ class BukkitMain : JavaPlugin() {
 
         // Snapshot only; every player mutation below is routed back to the player/entity scheduler.
         onlinePlayers.forEach { player ->
-            Universal.get().callConnection(player.name, player.address?.address?.hostAddress ?: "")?.let { reason ->
-                FoliaSchedulers.runPlayer(player, this) { player.kick(TextComponents.legacy(reason)) }
+            val playerName = player.name
+            val playerAddress = player.address?.address?.hostAddress ?: ""
+            FoliaSchedulers.runAsync(this) {
+                Universal.get().callConnection(playerName, playerAddress)?.let { reason ->
+                    FoliaSchedulers.runPlayer(player, this) { player.kick(TextComponents.legacy(reason)) }
+                }
             }
         }
     }

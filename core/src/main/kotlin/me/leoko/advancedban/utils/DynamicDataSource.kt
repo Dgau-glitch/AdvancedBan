@@ -5,9 +5,15 @@ import com.zaxxer.hikari.HikariDataSource
 import me.leoko.advancedban.Universal
 
 class DynamicDataSource @Throws(ClassNotFoundException::class) constructor(preferMySQL: Boolean) {
+    private val connectionTimeoutMillis = 10_000L
+    private val validationTimeoutMillis = 5_000L
+    private val maximumPoolSize = 10
     private val config = HikariConfig()
 
     init {
+        config.connectionTimeout = connectionTimeoutMillis
+        config.validationTimeout = validationTimeoutMillis
+        config.maximumPoolSize = maximumPoolSize
         val mi = Universal.get().methods
         if (preferMySQL) {
             val ip = mi.getString(mi.getMySQLFile(), "MySQL.IP", "Unknown")

@@ -13,6 +13,7 @@ import javax.sql.rowset.RowSetFactory
 import javax.sql.rowset.RowSetProvider
 
 class DatabaseManager {
+    private val statementTimeoutSeconds = 10
     private var dataSource: HikariDataSource? = null
     var isUseMySQL: Boolean = false
         private set
@@ -76,6 +77,7 @@ class DatabaseManager {
         try {
             dataSource!!.connection.use { connection: Connection ->
                 connection.prepareStatement(sql).use { statement: PreparedStatement ->
+                    statement.queryTimeout = statementTimeoutSeconds
                     for (i in parameters.indices) {
                         statement.setObject(i + 1, parameters[i])
                     }
