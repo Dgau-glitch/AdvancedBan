@@ -173,13 +173,9 @@ class PunishmentManager {
      */
     fun getCachedMute(uuid: String): Punishment? {
         if (!isCached(uuid)) return null
-        val iterator = punishments.iterator()
-        while (iterator.hasNext()) {
-            val punishment = iterator.next()
+        for (punishment in punishments) {
             if (punishment.uuid != uuid || punishment.type.getBasic() != PunishmentType.MUTE) continue
             if (!punishment.isExpired()) return punishment
-            punishment.delete(null, false, false)
-            iterator.remove()
         }
         return null
     }
