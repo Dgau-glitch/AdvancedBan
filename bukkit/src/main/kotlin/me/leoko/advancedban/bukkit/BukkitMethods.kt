@@ -177,7 +177,7 @@ class BukkitMethods : MethodInterface {
 
     private fun getActiveMute(player: Any): Punishment? {
         val uuid = UUIDManager.get().getUUID(getName(player)) ?: return null
-        return PunishmentManager.get().getMute(uuid)
+        return PunishmentManager.get().getCachedMute(uuid)
     }
 
     override fun callChat(player: Any): Boolean {

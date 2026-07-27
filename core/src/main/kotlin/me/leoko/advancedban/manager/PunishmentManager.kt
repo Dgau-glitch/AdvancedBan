@@ -164,6 +164,22 @@ class PunishmentManager {
 
     fun getMute(uuid: String): Punishment? = getPunishments(uuid, PunishmentType.MUTE, true).firstOrNull()
 
+    /**
+     * Returns an already-loaded mute without falling back to the database.
+     *
+     * Folia fires chat/command events on region/entity tick threads where JDBC or other
+     * blocking work is forbidden. Online players are loaded during AsyncPlayerPreLoginEvent,
+     * so event listeners must use this cache-only path and never trigger a synchronous DB read.
+     */
+    fun getCachedMute(uuid: String): Punishment? {
+        if (!isCached(uuid)) return null
+        for (punishment in punishments) {
+            if (punishment.uuid != uuid || punishment.type.getBasic() != PunishmentType.MUTE) continue
+            if (!punishment.isExpired()) return punishment
+        }
+        return null
+    }
+
     fun isBanned(uuid: String): Boolean = getBan(uuid) != null
 
     fun isMuted(uuid: String): Boolean = getMute(uuid) != null
